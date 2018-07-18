@@ -7,10 +7,16 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
+const envPlugins = isDevelopment ? [] : [
+	new CleanWebpackPlugin(['dist']),
+	new UglifyJsPlugin(),
+	new OptimizeCSSAssetsPlugin(),
+]
+
 module.exports = {
   mode: 'production',
   entry: './src/main.ts',
-  devtool: isDevelopment ? 'eval-source-map' : undefined,
+  devtool: isDevelopment ? 'inline-source-map' : undefined,
   devServer: {
     contentBase: './dist',
 		hot: true,
@@ -19,13 +25,10 @@ module.exports = {
     historyApiFallback: true,
   },
   plugins: [
-    new CleanWebpackPlugin(['dist']),
     new MiniCssExtractPlugin({}),
     new HtmlWebpackPlugin({template: './src/index.html'}),
     new webpack.HotModuleReplacementPlugin(),
-    new UglifyJsPlugin(),
-    new OptimizeCSSAssetsPlugin(),
-  ],
+  ].concat([...envPlugins]),
   module: {
     rules: [{
       test: /\.(ts)$/,
@@ -49,7 +52,7 @@ module.exports = {
       ]
     }]
   },
-  resolve: { // unrequired.
-    extensions: ['.js', '.ts'],
+  resolve: {
+    extensions: ['.ts'],
   },
 };
