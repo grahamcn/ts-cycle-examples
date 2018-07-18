@@ -9,8 +9,8 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 
 const envPlugins = isDevelopment ? [] : [
 	new CleanWebpackPlugin(['dist']),
-	new UglifyJsPlugin(),
 	new OptimizeCSSAssetsPlugin(),
+	new UglifyJsPlugin(),
 ]
 
 module.exports = {
@@ -53,6 +53,6 @@ module.exports = {
     }]
   },
   resolve: {
-    extensions: ['.ts'],
+    extensions: ['.js', '.ts'], // .js due to imported npm dependencies
   },
 };

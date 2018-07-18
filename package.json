@@ -1,6 +1,6 @@
 {
-	"name": "ts-cycle-sportsbook",
-	"sideEffects": false,
+  "name": "ts-cycle-sportsbook",
+  "sideEffects": false,
   "version": "1.0.0",
   "description": "Typescript Cycle.js sportsbook PoC",
   "main": "index.js",
