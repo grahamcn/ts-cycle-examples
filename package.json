@@ -4,6 +4,8 @@
   "description": "Typescript Cycle.js sportsbook PoC",
   "main": "index.js",
   "scripts": {
+    "build": "webpack",
+    "dev": "webpack-dev-server --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,8 +19,22 @@
   },
   "homepage": "https://github.com/grahamcn/ts-cycle-sportsbook#readme",
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^1.0.0",
+    "extract-loader": "^2.0.1",
+    "file-loader": "^1.1.11",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.4.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.0",
+    "ts-loader": "^4.4.2",
+    "typescript": "^2.9.2",
     "webpack": "^4.16.1",
-    "webpack-cli": "^3.0.8"
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
     "@cycle/dom": "^20.4.0",
