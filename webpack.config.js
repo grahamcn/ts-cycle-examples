@@ -5,9 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 
-const isDevelopment = process.env.NODE_ENV === "development"
-
-console.log(isDevelopment)
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 module.exports = {
   mode: 'production',
@@ -16,7 +14,9 @@ module.exports = {
   devServer: {
     contentBase: './dist',
 		hot: true,
-		port: 8181
+		port: 8181,
+		host: '0.0.0.0',
+    historyApiFallback: true,
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
