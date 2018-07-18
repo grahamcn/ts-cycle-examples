@@ -19,5 +19,10 @@
   "devDependencies": {
     "webpack": "^4.16.1",
     "webpack-cli": "^3.0.8"
+  },
+  "dependencies": {
+    "@cycle/dom": "^20.4.0",
+    "@cycle/run": "^4.4.0",
+    "xstream": "^11.7.0"
   }
 }
