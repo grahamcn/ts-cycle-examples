@@ -1,0 +1,331 @@
+/* Base */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f9f9f9;
+}
+
+/* Type */
+
+@font-face {
+  font-family: 'Sky';
+  font-weight: 400;
+  font-style: normal;
+  font-display: fallback;
+  src: url('./fonts/sky-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Sky';
+  font-weight: 500;
+  font-style: normal;
+  font-display: fallback;
+  src: url('/fonts/sky-medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Sky';
+  font-weight: normal;
+  font-style: italic;
+  font-display: fallback;
+  src: url('/fonts/sky-italic.woff2') format('woff2');
+}
+
+body {
+  line-height: 1;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Sky', sans-serif;
+  color: #222;
+}
+
+p {
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+/* Container */
+
+body,
+html {
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.container__title {
+  padding: 0 16px;
+  line-height: 50px;
+  color: #fff;
+  background: #18418c;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.container__content {
+  display: flex;
+  flex-grow: 1;
+  border-bottom: 1px solid #e1e4e9;
+}
+
+/* Menu */
+
+.menu {
+  width: 300px;
+  padding: 16px 0;
+  border-right: 1px solid #e1e4e9;
+  background: #f9f9f9;
+}
+
+.menu__title {
+  padding: 0 16px;
+}
+
+.menu__subTitle {
+  margin-bottom: 16px;
+  margin-left: 16px;
+  color: #222;
+  font-weight: 500;
+}
+
+.menu__list {
+  margin-bottom: 16px;
+  list-style: none;
+}
+
+.menu__link {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #18418c;
+}
+
+.menu__link:hover {
+  text-decoration: underline;
+}
+
+.menu__groupTitle {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.menu__item .menu__list {
+  display: none;
+  margin-bottom: 0;
+  margin-left: 8px;
+}
+
+.menu__item--expanded .menu__list {
+  display: block;
+}
+
+/* Sport */
+
+.sport {
+  flex-grow: 1;
+  padding: 16px 16px 0;
+  background: #fff;
+}
+
+.sport__title {
+  margin-bottom: 16px;
+  font-size: 24px;
+}
+
+.sport__competition {
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+/* Event list */
+
+.eventList {
+  margin-bottom: 16px;
+}
+
+.eventList__header {
+  margin-bottom: 0;
+  padding: 12px 16px;
+  color: #fff;
+  background: #18418c;
+  font-size: 16px;
+}
+
+.eventList__events {
+  border: solid #e1e4e9;
+  border-width: 0 1px 1px;
+}
+
+/* Event */
+
+.event {
+  display: flex;
+  border-bottom: 1px solid #e1e4e9;
+}
+
+.event:last-child {
+  border-bottom: 0;
+}
+
+.event__name {
+  width: 40%;
+  padding: 8px 16px;
+  border-right: 1px solid #e1e4e9;
+  line-height: 1.4;
+  text-decoration: none;
+  color: #2c549e;
+}
+
+.event__name:hover {
+  text-decoration: underline;
+}
+
+.event__startTime {
+  font-size: smaller;
+  color: #aaa;
+}
+
+.event__markets {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  background: #fbfbfb;
+}
+
+/* Market */
+
+.market {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.market__outcomes {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  padding: 0 5%;
+}
+
+/* Outcome */
+
+.outcome {
+  text-align: center;
+}
+
+.outcome__label {
+  margin-bottom: 6px;
+  font-size: smaller;
+}
+
+/* Betslip */
+
+.betslip {
+  width: 300px;
+  padding: 16px 0;
+  border-left: 1px solid #e1e4e9;
+  background: #f9f9f9;
+}
+
+.betslip__title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.betslip__count {
+  margin-right: 8px;
+  padding: 6px 10px;
+  line-height: 1;
+  border-radius: 50%;
+  color: #fff;
+  background: #df2030;
+  font-size: smaller;
+}
+
+.betslip__selections {
+  border-top: 1px solid #e1e4e9;
+}
+
+/* Selection */
+
+.selection {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e1e4e9;
+}
+
+.selection__details {
+  margin-left: 16px;
+  flex-grow: 1;
+}
+
+.selection__outcome {
+  margin-bottom: 6px;
+  color: #132c6c;
+  font-weight: 500;
+}
+
+.selection__market {
+  margin-bottom: 6px;
+}
+
+.selection__market,
+.selection__startTime {
+  font-size: smaller;
+}
+
+.selection__remove {
+  position: relative;
+  left: 8px;
+  padding: 8px;
+  font-weight: 500;
+  user-select: none;
+  cursor: pointer;
+}
+
+/* Price */
+
+.price {
+  padding: 4px 8px;
+  font-weight: 500;
+  user-select: none;
+}
+
+.price--clickable {
+  cursor: pointer;
+}
+
+.price--clicked,
+.price--updated {
+  border-radius: 12px;
+  color: #fff;
+}
+
+.price--clicked {
+  background: #1fa94a;
+}
+
+.price--updated {
+  background: #e4b30b;
+}
