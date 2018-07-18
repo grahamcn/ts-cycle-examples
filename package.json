@@ -1,0 +1,23 @@
+{
+  "name": "ts-cycle-sportsbook",
+  "version": "1.0.0",
+  "description": "Typescript Cycle.js sportsbook PoC",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grahamcn/ts-cycle-sportsbook.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grahamcn/ts-cycle-sportsbook/issues"
+  },
+  "homepage": "https://github.com/grahamcn/ts-cycle-sportsbook#readme",
+  "devDependencies": {
+    "webpack": "^4.16.1",
+    "webpack-cli": "^3.0.8"
+  }
+}
