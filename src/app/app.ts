@@ -13,8 +13,12 @@ function mapNumberToMessage(i: number): VNode {
 	)
 }
 
-function add(n) {
-	return function (i: number): number {
+interface AddN extends Function {
+	(i: number): number
+}
+
+function add(n: number): AddN {
+	return function addN(i: number): number {
 		return i + n
 	}
 }
