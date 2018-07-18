@@ -7,8 +7,11 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-const envPlugins = isDevelopment ? [] : [
+const envPlugins = isDevelopment ? [
+	new webpack.HotModuleReplacementPlugin(),
+] : [
 	new CleanWebpackPlugin(['dist']),
+	new MiniCssExtractPlugin({}),
 	new OptimizeCSSAssetsPlugin(),
 	new UglifyJsPlugin(),
 ]
@@ -25,9 +28,7 @@ module.exports = {
     historyApiFallback: true,
   },
   plugins: [
-    new MiniCssExtractPlugin({}),
     new HtmlWebpackPlugin({template: './src/index.html'}),
-    new webpack.HotModuleReplacementPlugin(),
   ].concat([...envPlugins]),
   module: {
     rules: [{
