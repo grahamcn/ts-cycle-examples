@@ -1,4 +1,3 @@
-
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -6,14 +5,18 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 
+const isDevelopment = process.env.NODE_ENV === "development"
+
+console.log(isDevelopment)
 
 module.exports = {
   mode: 'production',
   entry: './src/main.ts',
-  devtool: 'eval-source-map',
+  devtool: isDevelopment ? 'eval-source-map' : undefined,
   devServer: {
     contentBase: './dist',
-    hot: true
+		hot: true,
+		port: 8181
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
