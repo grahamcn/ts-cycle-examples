@@ -1,12 +1,17 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode } from '@cycle/dom'
-import { RequestInput } from '../../node_modules/@cycle/http'
+import { div, VNode, DOMSource } from '@cycle/dom'
+import { RequestInput, HTTPSource } from '../../node_modules/@cycle/http'
 
 import '../css/styles.css'
 
 interface Sinks {
   DOM: Stream<VNode>,
   HTTP: Stream<RequestInput>,
+}
+
+interface Sources {
+  DOM: DOMSource,
+  HTTP: HTTPSource,
 }
 
 function mapNumberToMessage(i: number): VNode {
@@ -25,7 +30,8 @@ function add(n: number): AddN {
 	}
 }
 
-function App(): Sinks {
+function App(sources: Sources): Sinks {
+
 	const vdom$ =
 		xs.periodic(1000)
 			.startWith(-1)
@@ -34,7 +40,7 @@ function App(): Sinks {
 
   const http$ =
     xs.of({
-      category: 'star-wars-poeple',
+      category: 'star-wars-people',
       url: 'https://swapi.co/api/people',
     })
 
