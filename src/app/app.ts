@@ -1,6 +1,7 @@
 import xs, { Stream } from 'xstream'
 import { div, VNode, DOMSource } from '@cycle/dom'
 import { RequestInput, HTTPSource } from '../../node_modules/@cycle/http'
+import { Location } from 'history'
 
 import '../css/styles.css'
 
@@ -10,12 +11,13 @@ import Betslip from './betslip'
 
 interface Sinks {
   DOM: Stream<VNode>,
-  // HTTP: Stream<RequestInput>,
+  HTTP: Stream<RequestInput>,
 }
 
 interface Sources {
   DOM: DOMSource,
   HTTP: HTTPSource,
+  History: Stream<Location>,
 }
 
 function App(sources: Sources): Sinks {
@@ -25,6 +27,7 @@ function App(sources: Sources): Sinks {
   const betslipSinks = Betslip(sources)
 
   const menuDom$: Stream<VNode> = menuSinks.DOM
+  const menuHttp$: Stream<RequestInput> = menuSinks.HTTP
   const sportDom$: Stream<VNode> = sportSinks.DOM
   const betslipDom$: Stream<VNode> = betslipSinks.DOM
 
@@ -46,6 +49,7 @@ function App(sources: Sources): Sinks {
 
 	return {
     DOM: vdom$,
+    HTTP: menuHttp$,
 	}
 }
 
