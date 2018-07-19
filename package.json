@@ -39,6 +39,8 @@
   },
   "dependencies": {
     "@cycle/dom": "^20.4.0",
+    "@cycle/history": "^6.10.0",
+    "@cycle/http": "^14.9.0",
     "@cycle/run": "^4.4.0",
     "xstream": "^11.7.0"
   }
