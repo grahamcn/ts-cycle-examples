@@ -11,7 +11,6 @@ const envPlugins = isDevelopment ? [
 	new webpack.HotModuleReplacementPlugin(),
 ] : [
 	new CleanWebpackPlugin(['dist']),
-	new MiniCssExtractPlugin({}),
 	new OptimizeCSSAssetsPlugin(),
 	new UglifyJsPlugin(),
 ]
@@ -28,6 +27,7 @@ module.exports = {
     historyApiFallback: true,
   },
   plugins: [
+    new MiniCssExtractPlugin({}),
     new HtmlWebpackPlugin({template: './src/index.html'}),
   ].concat([...envPlugins]),
   module: {
