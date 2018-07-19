@@ -10,8 +10,12 @@ import {
 	transformPathToSecondaryDataKey,
 	getTertiaryMenuDataUrl,
 	groupByCountry,
-	simpleHttpResponseReplaceError,
+	sortMapByKey,
 } from './misc/helpers'
+
+import {
+	simpleHttpResponseReplaceError,
+} from './misc/helpers.xs'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -22,6 +26,8 @@ interface Sources {
 	History: Stream<Location>,
 	HTTP: HTTPSource,
 }
+
+// Convert to MVI in a copy of this file as an example.
 
 function Menu(sources: Sources): Sinks {
 
@@ -50,21 +56,23 @@ function Menu(sources: Sources): Sinks {
 			.map(res => res.body)
 
 	const successMenuData$ = menuData$.filter(data => !data.error)
-	const errorMenuData$ = menuData$.filter(data => data.error)
+	const errorMenuData$ = menuData$.filter(data => !!data.error)
 
 	// start - next dom, the grouped countries
 	const groupedByCountry$: xs<Map<string, object>> =
-		menuData$
-			.filter(menuData => !menuData.error)
+		successMenuData$
 			.map(pick('data'))
 			.map(pick('types'))
-			.map(groupByCountry)
-			.map(map => new Map([...map.entries()].sort())) // sort a map by id
-			.debug(console.log)
+			.map(groupByCountry) // returns a stream which emits one Map
+			.map(sortMapByKey) // sorts the one Map and returns a stream that emits that
 
+	// transform that plus the fixed ones and in evidenza to a stream of lists with or without titles.
+	// first item in the list is calcio?
+	// its children are the groups?
 	const successMenuDom$: Stream<VNode> = successMenuData$.map(res => div(JSON.stringify(res)))
 	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(res => div('No data for this segment'))
 
+	// add loading state &/ spin this
 	const vdom$: Stream<VNode> =
 		xs.merge(
 			successMenuDom$,
