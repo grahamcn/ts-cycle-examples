@@ -8,7 +8,9 @@ import { dropRepeats } from './misc/xstream.extra'
 import {
 	pick,
 	transformPathToSecondaryDataKey,
-	getTertiaryMenuDataUrl
+	getTertiaryMenuDataUrl,
+	groupByCountry,
+	simpleHttpResponseReplaceError,
 } from './misc/helpers'
 
 interface Sinks {
@@ -22,7 +24,6 @@ interface Sources {
 }
 
 function Menu(sources: Sources): Sinks {
-
 	// define a stream of sport
 	const secondaryDataKey$ =
 		sources.History
@@ -34,19 +35,38 @@ function Menu(sources: Sources): Sinks {
 	const menuHttp$ =
 		secondaryDataKey$.map(key => ({
 			url: getTertiaryMenuDataUrl(key),
-			'category': 'tertiary-menu'
+			'category': 'tertiary-menu',
 		}))
 
 	// define a stream of menu data responses
-	const menuResponse$ =
+	const menuData$ =
 		sources.HTTP
 			.select('tertiary-menu')
+			.map(simpleHttpResponseReplaceError)
 			.flatten()
+			.map(res => res.body)
 
-	const vdom$ =
-		menuResponse$
-			.map(res => div(JSON.stringify(res)))
-			.startWith(div('loading...'))
+	const successMenuData$ = menuData$.filter(data => !data.error)
+	const errorMenuData$ = menuData$.filter(data => data.error)
+
+	// start - next dom, the grouped countries
+	const groupedByCountry$: xs<Map<string, object>> =
+		menuData$
+			.filter(menuData => !menuData.error)
+			.map(pick('data'))
+			.map(pick('types'))
+			.map(groupByCountry)
+			.map(map => new Map([...map.entries()].sort())) // sort a map!
+			.debug(console.log)
+
+	const successMenuDom$: Stream<VNode> = successMenuData$.map(res => div(JSON.stringify(res)))
+	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(res => div('No data for this segment'))
+
+	const vdom$: Stream<VNode> =
+		xs.merge(
+			successMenuDom$,
+			errorMenuDom$,
+		).startWith(div('loading...'))
 
 	return {
 		DOM: vdom$,
