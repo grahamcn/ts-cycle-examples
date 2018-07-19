@@ -1,5 +1,5 @@
-import { div, VNode } from '../../node_modules/@cycle/dom'
-import xs, { Stream } from '../../node_modules/xstream'
+import { div, VNode } from '@cycle/dom'
+import xs, { Stream } from 'xstream'
 
 interface Sinks {
   DOM: Stream<VNode>,

@@ -1,10 +1,15 @@
-import { div, VNode } from '../../node_modules/@cycle/dom'
-import xs, { Stream } from '../../node_modules/xstream'
+import { div, VNode } from '@cycle/dom'
+import xs, { Stream } from 'xstream'
 import { Location } from 'history'
+import { RequestInput, HTTPSource } from '@cycle/http'
 
-import { dropRepeats } from './xstream.extra'
-import { defaultSecondaryMenuSegment } from './constants'
-import { RequestInput } from '../../node_modules/@cycle/http'
+import { dropRepeats } from './misc/xstream.extra'
+
+import {
+  pick,
+  transformPathToSecondaryDataKey,
+  getTertiaryMenuDataUrl
+} from './misc/helpers'
 
 interface Sinks {
   DOM: Stream<VNode>,
@@ -13,34 +18,35 @@ interface Sinks {
 
 interface Sources {
   History: Stream<Location>,
-}
-
-function pick(key) {
-  return function(o) {
-    return o[key]
-  }
-}
-
-function transformPathToSecondaryDataKey (pathname: string): string {
-  return pathname.split('/')[1] || defaultSecondaryMenuSegment
+  HTTP: HTTPSource,
 }
 
 function Menu(sources: Sources): Sinks {
 
+  // define a stream of sport
   const secondaryDataKey$ =
     sources.History
       .map(pick('pathname'))
       .map(transformPathToSecondaryDataKey)
-      .compose(dropRepeats()) // akin to memoize / should component update. aka thought.
+      .compose(dropRepeats()) // akin to memoize / shouldComponentUpdate. if we change urls, we don't change menu unless segment 1 changes
 
+  // define a stream of menu data requests
   const menuHttp$ =
     secondaryDataKey$.map(key => ({
-      url: `https://swapi.co/api/people?${key}`,
-      'category': 'secondary-menu'
+      url: getTertiaryMenuDataUrl(key),
+      'category': 'tertiary-menu'
     }))
 
+  // define a stream of menu data responses
+  const menuResponse$ =
+    sources.HTTP
+      .select('tertiary-menu')
+      .flatten()
+
   const vdom$ =
-    xs.of(div('.menu', 'Menu'))
+    menuResponse$
+      .map(res => div(JSON.stringify(res)))
+      .startWith(div('loading...'))
 
   return {
     DOM: vdom$,

@@ -1,6 +1,6 @@
 import xs, { Stream } from 'xstream'
 import { div, VNode, DOMSource } from '@cycle/dom'
-import { RequestInput, HTTPSource } from '../../node_modules/@cycle/http'
+import { RequestInput, HTTPSource } from '@cycle/http'
 import { Location } from 'history'
 
 import '../css/styles.css'
