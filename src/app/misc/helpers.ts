@@ -1,19 +1,19 @@
-import xs, { Stream } from 'xstream'
-import { defaultSecondaryMenuSegment, baseUrl } from './constants'
+import xs from 'xstream'
+import { defaultSecondarySegment, baseUrl } from './constants'
 
 interface PickKey extends Function {
 	(s: Object): string | number | Object // could be others, extend if required
 }
 
-// returns a function that will pick the key within the closure from a given object
+// returns a function that will pick the key created in the closure from a given object
 export function pick(key: string | number): PickKey {
 	return function (o: Object): any {
 		return o[key] || undefined // not null, see Crockford
 	}
 }
 
-export function transformPathToSecondaryDataKey(pathname: string): string {
-	return pathname.split('/')[1] || defaultSecondaryMenuSegment
+export function transformPathToSecondaryDataKey(pathname: string, defaultSecondary: string = defaultSecondarySegment): string {
+	return pathname.split('/')[1] || defaultSecondary
 }
 
 export function getTertiaryMenuDataUrl(key: string, base: string = baseUrl): string {
@@ -21,11 +21,13 @@ export function getTertiaryMenuDataUrl(key: string, base: string = baseUrl): str
 }
 
 export function groupByCountry(types: any[]): Map<string, object> {
-	return types.map(type =>
-		Object.assign({}, type, {
-			country: type.name.split(' - ')[0].trim(),
-			title: type.name.split(' - ')[1].trim(),
-		}))
+	return types // competitions, with the country name embedded in each type name. eg "england - premier league", "england - chanpionship"
+		.map(type =>
+			Object.assign({}, type, {
+				country: type.name.split(' - ')[0].trim(),
+				title: type.name.split(' - ')[1].trim(),
+			})
+		)
 		.reduce((acc, enrichedType) => {
 			return !acc.get(enrichedType.country) ?
 				acc.set(enrichedType.country, {
@@ -37,6 +39,8 @@ export function groupByCountry(types: any[]): Map<string, object> {
 		}, new Map())
 }
 
+// when the stream returns an error, replace an error on the stream with a non erroneous stream (ie don't kill the stream),
+// with an error property on it to identify
 export function simpleHttpResponseReplaceError(response$) {
 	return response$.replaceError(err => {
 		const body = {

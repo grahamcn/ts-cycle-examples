@@ -24,6 +24,7 @@ interface Sources {
 }
 
 function Menu(sources: Sources): Sinks {
+
 	// define a stream of sport
 	const secondaryDataKey$ =
 		sources.History
@@ -36,6 +37,8 @@ function Menu(sources: Sources): Sinks {
 		secondaryDataKey$.map(key => ({
 			url: getTertiaryMenuDataUrl(key),
 			'category': 'tertiary-menu',
+			// https://github.com/cyclejs/cyclejs/issues/355
+			lazy: true, // cancellable
 		}))
 
 	// define a stream of menu data responses
@@ -56,7 +59,7 @@ function Menu(sources: Sources): Sinks {
 			.map(pick('data'))
 			.map(pick('types'))
 			.map(groupByCountry)
-			.map(map => new Map([...map.entries()].sort())) // sort a map!
+			.map(map => new Map([...map.entries()].sort())) // sort a map by id
 			.debug(console.log)
 
 	const successMenuDom$: Stream<VNode> = successMenuData$.map(res => div(JSON.stringify(res)))
