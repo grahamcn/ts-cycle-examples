@@ -8,6 +8,7 @@ interface Sinks {
 interface Sources {}
 
 function Sport(sources: Sources): Sinks {
+
   const vdom$ =
     xs.of(div('.sport', 'Sport'))
 

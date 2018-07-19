@@ -21,7 +21,7 @@ function pick(key) {
   }
 }
 
-function transformPathToMenuKey (pathname: string): string {
+function transformPathToSecondaryDataKey (pathname: string): string {
   return pathname.split('/')[1] || defaultSecondaryMenuSegment
 }
 
@@ -30,7 +30,7 @@ function Menu(sources: Sources): Sinks {
   const secondaryDataKey$ =
     sources.History
       .map(pick('pathname'))
-      .map(transformPathToMenuKey)
+      .map(transformPathToSecondaryDataKey)
       .compose(dropRepeats()) // akin to memoize / should component update. aka thought.
 
   const menuHttp$ =
