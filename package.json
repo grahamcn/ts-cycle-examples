@@ -5,7 +5,7 @@
   "description": "Typescript Cycle.js sportsbook PoC",
   "main": "index.js",
   "scripts": {
-		"build": "webpack",
+    "build": "webpack",
     "dev": "NODE_ENV=\"development\" webpack-dev-server --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -42,6 +42,7 @@
     "@cycle/history": "^6.10.0",
     "@cycle/http": "^14.9.0",
     "@cycle/run": "^4.4.0",
+    "cycle-onionify": "^6.1.0",
     "xstream": "^11.7.0"
   }
 }

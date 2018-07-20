@@ -2,6 +2,7 @@ import xs, { Stream } from 'xstream'
 import { div, VNode, DOMSource } from '@cycle/dom'
 import { RequestInput, HTTPSource } from '@cycle/http'
 import { Location } from 'history'
+import { StateSource, Reducer } from '../../node_modules/cycle-onionify'
 
 import '../css/styles.css'
 
@@ -9,15 +10,19 @@ import Menu from './menu'
 import Sport from './sport'
 import Betslip from './betslip'
 
+interface State {}
+
 interface Sinks {
 	DOM: Stream<VNode>,
-	HTTP: Stream<RequestInput>,
+  HTTP: Stream<RequestInput>,
+  onion: Stream<Reducer<State>>,
 }
 
 interface Sources {
 	DOM: DOMSource,
 	HTTP: HTTPSource,
-	History: Stream<Location>,
+  History: Stream<Location>,
+  onion: StateSource<State>,
 }
 
 function App(sources: Sources): Sinks {
@@ -27,9 +32,15 @@ function App(sources: Sources): Sinks {
 	const betslipSinks = Betslip(sources)
 
 	const menuDom$: Stream<VNode> = menuSinks.DOM
-	const menuHttp$: Stream<RequestInput> = menuSinks.HTTP
-	const sportDom$: Stream<VNode> = sportSinks.DOM
-	const betslipDom$: Stream<VNode> = betslipSinks.DOM
+  const menuHttp$: Stream<RequestInput> = menuSinks.HTTP
+
+  const sportDom$: Stream<VNode> = sportSinks.DOM
+  const sportHttp$: Stream<RequestInput> = sportSinks.HTTP
+
+  const betslipDom$: Stream<VNode> = betslipSinks.DOM
+
+  const http$: Stream<RequestInput> =
+    xs.merge(menuHttp$, sportHttp$)
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
@@ -51,7 +62,8 @@ function App(sources: Sources): Sinks {
 
 	return {
 		DOM: vdom$,
-		HTTP: menuHttp$,
+    HTTP: http$,
+    onion: xs.empty()
 	}
 }
 

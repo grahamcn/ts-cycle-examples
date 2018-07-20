@@ -19,6 +19,10 @@ export function getTertiaryMenuDataUrl(key: string, base: string = baseUrl): str
 	return `${base}/${key}/competitions`
 }
 
+export function getPageDataUrl(key: string, base: string = baseUrl): string {
+	return `${base}/${key}/events`
+}
+
 export function groupByCountry(types: any[]): Map<string, object> {
 	return types // competitions, with the country name embedded in each type name. eg "england - premier league", "england - chanpionship"
 		.map(type =>

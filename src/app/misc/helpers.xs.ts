@@ -5,7 +5,7 @@ import xs from 'xstream'
 export function simpleHttpResponseReplaceError(response$) {
 	return response$.replaceError(err => {
 		const body = {
-			error: err,
+			err,
 			message: null,
 		}
 

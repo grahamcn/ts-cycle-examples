@@ -47,7 +47,6 @@ function Menu(sources: Sources): Sinks {
 			lazy: true, // cancellable
 		}))
 
-	// define a stream of menu data responses
 	const menuData$ =
 		sources.HTTP
 			.select('tertiary-menu')
@@ -55,22 +54,19 @@ function Menu(sources: Sources): Sinks {
 			.flatten()
 			.map(res => res.body)
 
-	const successMenuData$ = menuData$.filter(data => !data.error)
-	const errorMenuData$ = menuData$.filter(data => !!data.error)
+	const successMenuData$ = menuData$.filter(data => !data.err)
+	const errorMenuData$ = menuData$.filter(data => !!data.err)
 
-	// start - next dom, the grouped countries
 	const groupedByCountry$: xs<Map<string, object>> =
 		successMenuData$
 			.map(pick('data'))
 			.map(pick('types'))
 			.map(groupByCountry) // returns a stream which emits one Map
-			.map(sortMapByKey) // sorts the one Map and returns a stream that emits that
+      .map(sortMapByKey) // sorts the one Map and returns a stream that emits that
+      .debug(console.log)
 
-	// transform that plus the fixed ones and in evidenza to a stream of lists with or without titles.
-	// first item in the list is calcio?
-	// its children are the groups?
 	const successMenuDom$: Stream<VNode> = successMenuData$.map(res => div(JSON.stringify(res)))
-	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(res => div('No data for this segment'))
+	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(res => div('No menu data for this segment'))
 
 	// add loading state &/ spin this
 	const vdom$: Stream<VNode> =
