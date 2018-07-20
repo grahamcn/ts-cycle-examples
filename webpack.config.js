@@ -18,7 +18,7 @@ const envPlugins = isDevelopment ? [
 module.exports = {
   mode: 'production',
   entry: './src/main.ts',
-  devtool: isDevelopment ? 'inline-source-map' : undefined,
+  // devtool: isDevelopment ? 'source-map' : undefined,
   devServer: {
     contentBase: './dist',
 		hot: true,

@@ -62,8 +62,8 @@ function Menu(sources: Sources): Sinks {
 			.map(pick('data'))
 			.map(pick('types'))
 			.map(groupByCountry) // returns a stream which emits one Map
-      .map(sortMapByKey) // sorts the one Map and returns a stream that emits that
-      .debug(console.log)
+			.map(sortMapByKey) // sorts the one Map and returns a stream that emits that
+			.debug(console.log)
 
 	const successMenuDom$: Stream<VNode> = successMenuData$.map(res => div(JSON.stringify(res)))
 	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(res => div('No menu data for this segment'))

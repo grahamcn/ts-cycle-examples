@@ -3,20 +3,20 @@ export const baseUrl = 'https://vkyyqd7276.execute-api.eu-west-2.amazonaws.com/p
 
 
 export interface MenuItem {
-  title: string
-  url: string,
+	title: string
+	url: string,
 }
 
 export const containerMenuData: Array<MenuItem> = [{
-  title: 'Home',
-  url: ''
+	title: 'Home',
+	url: '/'
 }, {
-  title: 'Calcio',
-  url: 'calcio'
+	title: 'Calcio',
+	url: '/calcio'
 }, {
-  title: 'Tennis',
-  url: 'tennis'
+	title: 'Tennis',
+	url: '/tennis'
 }, {
-  title: 'Rollerball',
-  url: 'rollerball'
+	title: 'Rollerball',
+	url: '/rollerball'
 }]

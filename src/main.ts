@@ -7,8 +7,8 @@ import onionify from 'cycle-onionify'
 import App from './app/app'
 
 const drivers = {
-  DOM: makeDOMDriver('#app'),
-  HTTP: makeHTTPDriver(),
+	DOM: makeDOMDriver('#app'),
+	HTTP: makeHTTPDriver(),
 	History: makeHistoryDriver(),
 }
 
