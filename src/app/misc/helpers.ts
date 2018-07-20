@@ -45,3 +45,9 @@ export function groupByCountry(types: any[]): Map<string, object> {
 export function sortMapByKey(map: Map<string|number, any>): Map<string|number, any> {
 	return new Map([...map.entries()].sort())
 }
+
+export function getTargetHref(event: MouseEvent): string {
+  const target: EventTarget = event.target
+  event.preventDefault()
+	return target['href']
+}

@@ -10,6 +10,8 @@ body {
   background: #f9f9f9;
 }
 
+/* Type */
+
 @font-face {
   font-family: 'Sky';
   font-weight: 400;
@@ -80,6 +82,23 @@ html {
   border-bottom: 1px solid #e1e4e9;
 }
 
+/* Main Menu */
+.containerMenu {
+  padding: 16px;
+  border-bottom: 1px solid #e1e4e9;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.containerMenu__list {
+  display: flex;
+  list-style: none;
+}
+
+.containerMenu__item {
+  padding: 6px;
+}
+
 /* Menu */
 
 .menu {
@@ -105,14 +124,16 @@ html {
   list-style: none;
 }
 
-.menu__link {
+.menu__link,
+.containerMenu__link {
   display: block;
   padding: 8px 16px;
   text-decoration: none;
   color: #18418c;
 }
 
-.menu__link:hover {
+.menu__link:hover,
+.containerMenu__link:hover {
   text-decoration: underline;
 }
 
