@@ -1,6 +1,7 @@
 import xs, { Stream } from 'xstream'
 import { div, VNode, DOMSource } from '@cycle/dom'
 import { RequestInput, HTTPSource } from '@cycle/http'
+import isolate from '@cycle/isolate'
 import { Location } from '@cycle/history'
 import { StateSource, Reducer } from 'cycle-onionify'
 
@@ -30,7 +31,7 @@ interface Sources {
 function App(sources: Sources): Sinks {
 
 	const containerMenuSinks = ContainerMenu(sources)
-	const menuSinks = Menu(sources)
+	const menuSinks = isolate(Menu, 'menu')(sources) // isolated such that it can have state.
 	const sportSinks = Sport(sources)
 	const betslipSinks = Betslip(sources)
 
@@ -39,6 +40,7 @@ function App(sources: Sources): Sinks {
 
 	const menuDom$: Stream<VNode> = menuSinks.DOM
 	const menuHttp$: Stream<RequestInput> = menuSinks.HTTP
+	const menuReducer$: Stream<Reducer<State>> = menuSinks.onion
 
 	const sportDom$: Stream<VNode> = sportSinks.DOM
 	const sportHttp$: Stream<RequestInput> = sportSinks.HTTP
@@ -73,7 +75,7 @@ function App(sources: Sources): Sinks {
 	return {
 		DOM: vdom$,
 		HTTP: http$,
-		onion: xs.empty(),
+		onion: menuReducer$,
 		History: history$,
 	}
 }
