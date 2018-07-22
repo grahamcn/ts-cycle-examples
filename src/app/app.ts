@@ -7,7 +7,7 @@ import { StateSource, Reducer } from 'cycle-onionify'
 
 import '../css/styles.css'
 
-import Menu from './menu'
+import SideMenu from './sideMenu'
 import Sport from './sport'
 import Betslip from './betslip'
 import ContainerMenu from './containerMenu'
@@ -31,16 +31,17 @@ interface Sources {
 function App(sources: Sources): Sinks {
 
 	const containerMenuSinks = ContainerMenu(sources)
-	const menuSinks = isolate(Menu, 'menu')(sources) // isolated such that it can have state.
+	const sideMenuSinks = isolate(SideMenu, 'sideMenu')(sources)
 	const sportSinks = Sport(sources)
 	const betslipSinks = Betslip(sources)
 
 	const containerMenuDom$ = containerMenuSinks.DOM
 	const containerMenuHistory$ = containerMenuSinks.History
 
-	const menuDom$: Stream<VNode> = menuSinks.DOM
-	const menuHttp$: Stream<RequestInput> = menuSinks.HTTP
-	const menuReducer$: Stream<Reducer<State>> = menuSinks.onion
+	const menuDom$: Stream<VNode> = sideMenuSinks.DOM
+	const menuHttp$: Stream<RequestInput> = sideMenuSinks.HTTP
+	const menuReducer$: Stream<Reducer<State>> = sideMenuSinks.onion
+	const menuHistory$: Stream<string> = sideMenuSinks.History
 
 	const sportDom$: Stream<VNode> = sportSinks.DOM
 	const sportHttp$: Stream<RequestInput> = sportSinks.HTTP
@@ -50,7 +51,11 @@ function App(sources: Sources): Sinks {
 	const http$: Stream<RequestInput> =
 		xs.merge(menuHttp$, sportHttp$)
 
-	const history$: Stream<string> = containerMenuHistory$
+	const history$: Stream<string> =
+		xs.merge(
+			containerMenuHistory$,
+			menuHistory$,
+		)
 
 	const vdom$: Stream<VNode> =
 		xs.combine(

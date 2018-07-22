@@ -2,18 +2,18 @@ import { div, VNode } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 
 interface Sinks {
-  DOM: Stream<VNode>,
+	DOM: Stream<VNode>,
 }
 
-interface Sources {}
+interface Sources { }
 
 function Betslip(sources: Sources): Sinks {
-  const vdom$ =
-    xs.of(div('.betslip', 'Betslip'))
+	const vdom$ =
+		xs.of(div('.betslip', 'Betslip'))
 
-  return {
-    DOM: vdom$,
-  }
+	return {
+		DOM: vdom$,
+	}
 }
 
 export default Betslip

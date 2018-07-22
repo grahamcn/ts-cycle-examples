@@ -1,3 +1,4 @@
+const path = require('path')
 const webpack = require('webpack')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -15,12 +16,22 @@ const envPlugins = isDevelopment ? [
 	new UglifyJsPlugin(),
 ]
 
+const paths = {
+  DIST: path.resolve(__dirname, 'dist'),
+}
+
+
 module.exports = {
   mode: 'production',
-  entry: './src/main.ts',
+	entry: './src/main.ts',
+	output: {
+    path: paths.DIST,
+    filename: '[name].bundle.[hash].js',
+    publicPath: '/',
+	},
   // devtool: isDevelopment ? 'source-map' : undefined,
   devServer: {
-    contentBase: './dist',
+    contentBase: './dist/',
 		hot: true,
 		port: 8181,
 		host: '0.0.0.0',

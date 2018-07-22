@@ -103,6 +103,7 @@ html {
 
 .menu {
 	width: 300px;
+	min-width: 300px;
   padding: 16px 0;
   border-right: 1px solid #e1e4e9;
   background: #f9f9f9;
