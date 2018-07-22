@@ -83,18 +83,13 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 
 	const menuGroups = [{
 		items: staticTertiaryMenuItems(secondarySegmentUrl),
-		id: 1,
 	}, {
-		id: 2,
 		title: 'In Evidenza',
 		items: inEvidenzaMenuItems,
-	// }, {
-	// 	id: 3,
-	// 	title: 'Tutte Le Competizioni',
-	// 	items: tutteLeCompetizioniMenuItems,
-	//
+	}, {
+		title: 'Tutte Le Competizioni',
+		itemsGroups: tutteLeCompetizioniMenuItems,
 	}]
 
-	console.log(menuGroups)
 	return menuGroups
 }

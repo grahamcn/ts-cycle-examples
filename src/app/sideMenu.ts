@@ -3,6 +3,7 @@ import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
 import { StateSource, Reducer, makeCollection } from 'cycle-onionify'
+import isolate from '@cycle/isolate'
 import { dropRepeats } from './misc/xstream.extra'
 
 import {
@@ -16,12 +17,14 @@ import {
 	simpleHttpResponseReplaceError,
 } from './misc/helpers.xs'
 
-import Menu from './menu'
+import MenuGroup from './menuGroup'
+import SimpleMenu from './SimpleMenu'
 
 export interface Menu {
 	id: number,
 	title?: string,
 	items: Array<MenuItem>
+	itemGroups: Map<string, any>
 }
 
 export interface MenuItem {
@@ -41,7 +44,7 @@ interface Sinks {
 interface Sources {
 	History: Stream<Location>,
 	HTTP: HTTPSource,
-	onion: StateSource<State>,
+	onion: StateSource<State>
 }
 
 // Convert to MVI in a copy of this file as an example.
@@ -75,36 +78,59 @@ function SideMenu(sources: Sources): Sinks {
 	const successMenuData$ = menuData$.filter(data => !data.err)
 	const errorMenuData$ = menuData$.filter(data => !!data.err)
 
+	// END DATA
+
+	// START KINDA INTENT
+
 	// menu groups are the component state (well, an array of menu groups, empty or otherwise).
 	const menuGroups$: xs<Array<Map<string, MenuItem>>> =
 		successMenuData$.map(transformToMenuGroups)
 
-	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(res => div('No menu data for this segment'))
+	// A list of simple menus - it's state is passed by a lens (the default is to use this components state)
+	const menusLens = {
+		get: (state: Array<Menu>) => state.filter(menu => !!menu.items),
+		set: (state, childState) => state // ignore updates
+	}
 
-	const List = makeCollection({
-		item: Menu,
-		itemKey: (item: any) => item.id,
-		itemScope: key => key,
+	const List: any = makeCollection({
+		item: SimpleMenu,
 		collectSinks: instances => {
 			return {
-				DOM: instances.pickCombine('DOM').map(itemVNodes => itemVNodes),
-				History: instances.pickMerge('History').map(s => {
-					console.log(s)
-					return s
-				})
+				DOM: instances.pickCombine('DOM') // combine all the dom streams
+					.map(itemVNodes => itemVNodes),
+				History: instances.pickMerge('History').map((h: string) => h) // merge all the history streams
 			}
 		}
 	})
 
-	const listSinks = List(sources)
+	const listSinks = isolate(List, { onion: menusLens })(sources) // list idetifies the part of state of loop over
 	const listSinksDOM$: xs<Array<VNode>> = listSinks.DOM
 	const listSinksHistory$: xs<string> = listSinks.History
 
+	// one grouped menu, todo
+	const tutteLeCompetizioniMenuItemsLens = {
+		get: state => state.filter(menu => !!menu.itemsGroups)[0],
+		set: (state, childState) => state // ignore updates
+	}
+
+	const menuGroupSinks = isolate(MenuGroup, { onion: tutteLeCompetizioniMenuItemsLens })(sources)
+	const menuGroupSinksDom$: Stream<VNode> = menuGroupSinks.DOM
+
+	// VIEW ISH
+
+	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(res => div('No menu data for this segment'))
+
 	const successMenuDom$: Stream<VNode> =
-		listSinksDOM$.map(listDoms =>
-			div('.menu',
-				ul(listDoms)
-			)
+		xs.combine(
+			listSinksDOM$,
+			menuGroupSinksDom$,
+		).debug(console.log).map(([listSinksDOM, menuGroupSinksDom]) =>
+			div('.menu', [
+				ul('.menus',
+					listSinksDOM,
+				),
+				menuGroupSinksDom,
+			])
 		)
 
 	// add loading state
@@ -130,8 +156,8 @@ function SideMenu(sources: Sources): Sinks {
 	return {
 		DOM: vdom$,
 		HTTP: menuHttp$,
-		History: listSinksHistory$,
 		onion: reducer$,
+		History: listSinksHistory$,
 	}
 }
 

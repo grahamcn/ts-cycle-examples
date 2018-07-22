@@ -1,7 +1,6 @@
 import xs, { Stream } from 'xstream'
 import { div, VNode, DOMSource } from '@cycle/dom'
 import { RequestInput, HTTPSource } from '@cycle/http'
-import isolate from '@cycle/isolate'
 import { Location } from '@cycle/history'
 import { StateSource, Reducer } from 'cycle-onionify'
 
@@ -11,6 +10,7 @@ import SideMenu from './sideMenu'
 import Sport from './sport'
 import Betslip from './betslip'
 import ContainerMenu from './containerMenu'
+import isolate from '@cycle/isolate'
 
 interface State { }
 
@@ -38,10 +38,10 @@ function App(sources: Sources): Sinks {
 	const containerMenuDom$ = containerMenuSinks.DOM
 	const containerMenuHistory$ = containerMenuSinks.History
 
-	const menuDom$: Stream<VNode> = sideMenuSinks.DOM
-	const menuHttp$: Stream<RequestInput> = sideMenuSinks.HTTP
-	const menuReducer$: Stream<Reducer<State>> = sideMenuSinks.onion
-	const menuHistory$: Stream<string> = sideMenuSinks.History
+	const sideMenuDom$: Stream<VNode> = sideMenuSinks.DOM
+	const sideMenuHttp$: Stream<RequestInput> = sideMenuSinks.HTTP
+	const sideMenuReducer$: Stream<Reducer<State>> = sideMenuSinks.onion
+	const sideMenuHistory$: Stream<string> = sideMenuSinks.History
 
 	const sportDom$: Stream<VNode> = sportSinks.DOM
 	const sportHttp$: Stream<RequestInput> = sportSinks.HTTP
@@ -49,28 +49,28 @@ function App(sources: Sources): Sinks {
 	const betslipDom$: Stream<VNode> = betslipSinks.DOM
 
 	const http$: Stream<RequestInput> =
-		xs.merge(menuHttp$, sportHttp$)
+		xs.merge(sideMenuHttp$, sportHttp$)
 
 	const history$: Stream<string> =
 		xs.merge(
 			containerMenuHistory$,
-			menuHistory$,
+			sideMenuHistory$,
 		)
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
 			containerMenuDom$,
-			menuDom$,
+			sideMenuDom$,
 			sportDom$,
 			betslipDom$,
-		).map(([containerMenuDom, menuDom, sportDom, betslipDom]) =>
+		).map(([containerMenuDom, sideMenuDom, sportDom, betslipDom]) =>
 			div('.container', [
 				div('.container__title',
 					'Sky Bet POC'
 				),
 				containerMenuDom,
 				div('.container__content', [
-					menuDom,
+					sideMenuDom,
 					sportDom,
 					betslipDom,
 				])
@@ -80,7 +80,7 @@ function App(sources: Sources): Sinks {
 	return {
 		DOM: vdom$,
 		HTTP: http$,
-		onion: menuReducer$,
+		onion: sideMenuReducer$,
 		History: history$,
 	}
 }

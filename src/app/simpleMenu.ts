@@ -2,7 +2,7 @@ import { li, h4, a, ul, VNode, DOMSource } from '@cycle/dom'
 import { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
-import { MenuItem, Menu } from './sideMenu'
+import { Menu } from './sideMenu'
 import { getTargetDataUrl } from './misc/helpers'
 
 interface State extends Menu {}
@@ -17,7 +17,7 @@ interface Sources {
 	onion: StateSource<State>
 }
 
-function Menu(sources: Sources): Sinks {
+function SimpleMenu(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
 
 	const history$ =
@@ -54,4 +54,4 @@ function Menu(sources: Sources): Sinks {
 	}
 }
 
-export default Menu
+export default SimpleMenu
