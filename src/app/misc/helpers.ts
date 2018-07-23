@@ -82,11 +82,14 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 			.map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
 
 	const menuGroups = [{
+    id: 1,
 		items: staticTertiaryMenuItems(secondarySegmentUrl),
 	}, {
+    id: 2,
 		title: 'In Evidenza',
 		items: inEvidenzaMenuItems,
 	}, {
+    id: 3,
 		title: 'Tutte Le Competizioni',
 		itemsGroups: tutteLeCompetizioniMenuItems,
 	}]

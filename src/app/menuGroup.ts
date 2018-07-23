@@ -1,4 +1,4 @@
-import { VNode, DOMSource, div } from '@cycle/dom'
+import { VNode, DOMSource, div, li } from '@cycle/dom'
 import { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
@@ -19,8 +19,10 @@ function MenuGroup(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
 
 	const vdom$ =
-		state$.map(({title}) =>
-			div('menu group - ' + title)
+    state$.map(({title}) =>
+      li('.list',
+        div('menu group - ' + title)
+      )
 		)
 
 	return {
