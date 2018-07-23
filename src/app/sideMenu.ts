@@ -17,7 +17,7 @@ import {
 	simpleHttpResponseReplaceError,
 } from './misc/helpers.xs'
 
-import MenuGroup from './menuGroup'
+import GroupedMenu from './groupedMenu'
 import SimpleMenu from './SimpleMenu'
 
 export interface Menu {
@@ -116,7 +116,7 @@ function SideMenu(sources: Sources): Sinks {
 		set: (state, childState) => state // ignore updates
 	}
 
-	const menuGroupSinks = isolate(MenuGroup, { onion: tutteLeCompetizioniMenuItemsLens })(sources)
+	const menuGroupSinks = isolate(GroupedMenu, { onion: tutteLeCompetizioniMenuItemsLens })(sources)
   const menuGroupSinksDom$: Stream<VNode> = menuGroupSinks.DOM
 
 	// VIEW ISH
