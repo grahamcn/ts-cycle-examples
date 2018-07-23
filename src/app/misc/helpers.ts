@@ -37,7 +37,8 @@ export function transformToMenuItemsByCountry(types: any[], secondarySegmentUrl:
 				title: type.name.split(' - ')[1].trim(),
 				url: `/${secondarySegmentUrl}/${type.urlName}`,
 			})
-		)
+    )
+    .map(({url, title, country,}) => ({url, title, country,}))
 		.reduce(groupByKey('country'), new Map())
 }
 
@@ -74,12 +75,12 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 				}
 			})
 
-	const tutteLeCompetizioniMenuItems =
+	const tutteLeCompetizioniMenuItems: Map<string, MenuItem[]> =
 		[menuData]
 			.map(pick('data'))
 			.map(pick('types'))
-			.map((competitions: Array<any>)  => transformToMenuItemsByCountry(competitions, secondarySegmentUrl)) // returns a  Map
-			.map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
+			.map((competitions: Array<any>)  => transformToMenuItemsByCountry(competitions, secondarySegmentUrl))
+      .map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
 
 	const menuGroups = [{
     id: 1,
@@ -91,8 +92,13 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 	}, {
     id: 3,
 		title: 'Tutte Le Competizioni',
-		itemsGroups: tutteLeCompetizioniMenuItems,
+		itemsGroups: Array.from(tutteLeCompetizioniMenuItems),
 	}]
 
 	return menuGroups
+}
+
+// to test tree shaking
+export function iAmNotCalled() {
+  return 'i am not called'
 }

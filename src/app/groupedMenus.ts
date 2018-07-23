@@ -15,7 +15,7 @@ interface Sources {
 	onion: StateSource<State>
 }
 
-function GroupedMenu(sources: Sources): Sinks {
+function GroupedMenus(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
 
 	const vdom$ =
@@ -30,4 +30,4 @@ function GroupedMenu(sources: Sources): Sinks {
 	}
 }
 
-export default GroupedMenu
+export default GroupedMenus

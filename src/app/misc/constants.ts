@@ -37,4 +37,3 @@ export function staticTertiaryMenuItems(secondaryKey: string): Array<MenuItem> {
 		url: `/${secondaryKey}/weekend`,
 	}]
 }
-
