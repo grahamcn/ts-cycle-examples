@@ -1,8 +1,10 @@
-import { VNode, DOMSource, div, li } from '@cycle/dom'
-import { Stream } from 'xstream'
-import { StateSource } from 'cycle-onionify'
+import { VNode, DOMSource, div, li, h4, ul } from '@cycle/dom'
+import xs, { Stream } from 'xstream'
+import { StateSource, makeCollection } from 'cycle-onionify'
+import isolate from '@cycle/isolate'
 
 import { MenuGroup } from './sideMenu'
+import ToggleMenu from './toggleMenu'
 
 interface State extends MenuGroup {}
 
@@ -18,14 +20,35 @@ interface Sources {
 function GroupedMenus(sources: Sources): Sinks {
   const state$ = sources.onion.state$
 
-  // state is MenuGroup
-  // Lens is items / menus
+  const toggleMenuLens = {
+    get: state => state.items
+  }
 
-	const vdom$ =
-    state$.map(({title}) =>
-      li('.list',
-        div('menu group - ' + title)
-      )
+  const ToggleMenuList: any = makeCollection({
+    item: ToggleMenu,
+    itemKey: (item: any) => item.id,
+		itemScope: key => key,
+		collectSinks: instances => {
+			return {
+				DOM: instances.pickCombine('DOM'),
+			}
+		}
+	})
+
+  const toggleMenuListSinks = isolate(ToggleMenuList, {onion: toggleMenuLens})(sources)
+	const toggleMenuListSinksDom$: Stream<Array<VNode>> = toggleMenuListSinks.DOM
+
+  const vdom$ =
+    xs.combine(
+      state$,
+      toggleMenuListSinksDom$,
+    ).map(([state, toggleMenuListSinksDom]) =>
+      li('.list', [
+        h4('.menu__subTitle', state.title),
+        ul('.list', [
+          ...toggleMenuListSinksDom,
+        ]),
+      ])
 		)
 
 	return {

@@ -34,7 +34,7 @@ export interface MenuItem {
 
 export interface MenuGroup  {
   title: string,
-  items: MenuItem[],
+  items: Menu[],
 }
 
 interface State extends Array<Menu> {}
@@ -96,7 +96,6 @@ function SideMenu(sources: Sources): Sinks {
 		get: (state: Array<Menu>) => {
       return state.filter(menu => !!menu.items)
     },
-		set: (state, childState) => state // ignore updates
   }
 
 	const SimpleMenuList: any = makeCollection({
@@ -118,7 +117,6 @@ function SideMenu(sources: Sources): Sinks {
 	// one grouped menu, todo
 	const groupedMenusLens = {
 		get: state => state.filter(menu => !!menu.groups)[0],
-		set: (state, childState) => state // ignore updates
 	}
 
 	const menuGroupSinks = isolate(GroupedMenus, { onion: groupedMenusLens })(sources)
