@@ -121,6 +121,7 @@ function SideMenu(sources: Sources): Sinks {
 
 	const menuGroupSinks = isolate(GroupedMenus, { onion: groupedMenusLens })(sources)
 	const menuGroupSinksDom$: Stream<VNode> = menuGroupSinks.DOM
+	const menuGroupSinksHistory$: Stream<string> = menuGroupSinks.History
 
 	// VIEW ISH
 
@@ -165,7 +166,8 @@ function SideMenu(sources: Sources): Sinks {
 	// history
 	const history$ =
 		xs.merge(
-			listSinksHistory$
+			listSinksHistory$,
+			menuGroupSinksHistory$,
 		)
 
 	return {

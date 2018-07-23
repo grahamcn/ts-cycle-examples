@@ -3,8 +3,8 @@ import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
 import { Menu } from './sideMenu'
-import SimpleMenu from './SimpleMenu';
-import isolate from '../../node_modules/@cycle/isolate';
+import SimpleMenu from './SimpleMenu'
+import isolate from '@cycle/isolate'
 
 const openState = {
 	open: true,
@@ -21,7 +21,8 @@ const closedState = {
 interface State extends Menu {}
 
 interface Sinks {
-	DOM: Stream<VNode>,
+	DOM: Stream<VNode>
+	History: Stream<string>
 }
 
 interface Sources {
@@ -55,14 +56,13 @@ function ToggleMenu(sources: Sources): Sinks {
 			items: state.items
 		})
 	}
-	const Menu = isolate(SimpleMenu, 'items')(sources)
+	const Menu = isolate(SimpleMenu, {onion: menuLens})(sources)
 	const menuDom$: Stream<VNode> = Menu.DOM
-
+	const menuHistory$: Stream<string> = Menu.History
 
 	const vdom$ =
 		xs.combine(
-			state$, // title, from onion state
-			// menu from collection from onion state
+			state$, // title
 			toggleState$, // open, classes, arrow character,
 			menuDom$,
 		).map(([state, toggleState, menuDom]) =>
@@ -73,18 +73,14 @@ function ToggleMenu(sources: Sources): Sinks {
 					]),
 					toggleState.open ?
 						ul('.menu__list', [
-							li('.menu__item',
-								a('.menu__link',
-									'Test'
-								)
-							),
-							menuDom,
+							menuDom, // simple menu
 						]) : undefined
 				])
 		)
 
 	return {
 		DOM: vdom$,
+		History: menuHistory$,
 	}
 }
 

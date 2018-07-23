@@ -10,6 +10,7 @@ interface State extends MenuGroup { }
 
 interface Sinks {
 	DOM: Stream<VNode>,
+	History: Stream<string>
 }
 
 interface Sources {
@@ -31,12 +32,14 @@ function GroupedMenus(sources: Sources): Sinks {
 		collectSinks: instances => {
 			return {
 				DOM: instances.pickCombine('DOM'),
+				History: instances.pickMerge('History'),
 			}
 		}
 	})
 
 	const toggleMenuListSinks = isolate(ToggleMenuList, { onion: toggleMenuLens })(sources)
 	const toggleMenuListSinksDom$: Stream<VNode[]> = toggleMenuListSinks.DOM
+	const toggleMenuListSinksHistory$: Stream<string> = toggleMenuListSinks.History
 
 	const vdom$ =
 		xs.combine(
@@ -53,6 +56,7 @@ function GroupedMenus(sources: Sources): Sinks {
 
 	return {
 		DOM: vdom$,
+		History: toggleMenuListSinksHistory$,
 	}
 }
 
