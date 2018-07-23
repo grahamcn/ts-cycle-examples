@@ -21,7 +21,7 @@ function GroupedMenus(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
 
 	const toggleMenuLens = {
-		get: state => state.items
+		get: (state: State) => state.groups
 	}
 
 	const ToggleMenuList: any = makeCollection({
@@ -36,16 +36,16 @@ function GroupedMenus(sources: Sources): Sinks {
 	})
 
 	const toggleMenuListSinks = isolate(ToggleMenuList, { onion: toggleMenuLens })(sources)
-	const toggleMenuListSinksDom$: Stream<Array<VNode>> = toggleMenuListSinks.DOM
+	const toggleMenuListSinksDom$: Stream<VNode[]> = toggleMenuListSinks.DOM
 
 	const vdom$ =
 		xs.combine(
 			state$,
 			toggleMenuListSinksDom$,
 		).map(([state, toggleMenuListSinksDom]) =>
-			li('.list', [
+			li('.menu__list', [
 				h4('.menu__subTitle', state.title),
-				ul('.list', [
+				ul('.menu__list', [
 					...toggleMenuListSinksDom,
 				]),
 			])

@@ -19,7 +19,7 @@ interface Sources {
 
 function renderMenu({ title, items }: Menu): VNode {
 	return (
-		li('.list', [
+		li('.menu__list', [
 			title && items && h4('.menu__subTitle', title),
 			items && ul('.menu__list',
 				items.map(item =>

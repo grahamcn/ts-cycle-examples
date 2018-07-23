@@ -34,7 +34,7 @@ export interface MenuItem {
 
 export interface MenuGroup {
 	title: string,
-	items: Menu[],
+	groups: Menu[],
 }
 
 interface State extends Array<Menu> { }
@@ -133,11 +133,13 @@ function SideMenu(sources: Sources): Sinks {
 			// menusSinksDom$,
 		).map(([listSinksDOM, menuGroupSinksDom]) =>
 			div('.menu', [
-				ul('.menus', [
+				ul('.menu__list', [
 					...listSinksDOM,
 					menuGroupSinksDom,
 				])
 			])
+
+
 		)
 
 	// add loading state
