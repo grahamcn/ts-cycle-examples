@@ -3,7 +3,7 @@ import { div, VNode, ul, li, a, DOMSource } from '@cycle/dom'
 
 import { containerMenuData } from './misc/constants'
 import { getTargetDataUrl } from './misc/helpers'
-import { MenuItem } from './sideMenu'
+import { MenuItem } from './sideMenu.interfaces'
 
 export interface Sources {
 	DOM: DOMSource

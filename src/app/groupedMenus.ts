@@ -3,7 +3,7 @@ import xs, { Stream } from 'xstream'
 import { StateSource, makeCollection } from 'cycle-onionify'
 import isolate from '@cycle/isolate'
 
-import { MenuGroup } from './sideMenu'
+import { MenuGroup } from './sideMenu.interfaces'
 import ToggleMenu from './toggleMenu'
 
 interface State extends MenuGroup { }

@@ -4,7 +4,7 @@ import {
 	staticTertiaryMenuItems,
 } from './constants'
 
-import { MenuItem, Menu } from '../sideMenu'
+import { MenuItem, Menu } from '../sideMenu.interfaces'
 
 interface PickKey extends Function {
 	(s: Object): string | number | Object // could be others, extend if required
@@ -21,12 +21,17 @@ export function transformPathToSecondaryDataKey(pathname: string, defaultSeconda
 	return pathname.split('/')[1] || defaultSecondary
 }
 
+export function transformPathToPageDataPath(path: string, defaultSecondary: string = defaultSecondarySegment): string {
+	console.log(path)
+	return path === '/' ? '/calcio' : path
+}
+
 export function getTertiaryMenuDataUrl(key: string, base: string = baseUrl): string {
 	return `${base}/${key}/competitions`
 }
 
-export function getPageDataUrl(key: string, base: string = baseUrl): string {
-	return `${base}/${key}/events`
+export function getPageDataUrl(path: string, base: string = baseUrl): string {
+	return `${base}${path}/events`
 }
 
 export function transformToMenuItemsByCountry(types: any[], secondarySegmentUrl: string): Map<string, Array<MenuItem>> {
@@ -62,7 +67,7 @@ export function getTargetDataUrl(event: MouseEvent): string {
 	return target['dataset'].dataUrl
 }
 
-export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = baseUrl): Array<any> {
+export function transformToMenuGroups(menuData): Array<any> {
 	const secondarySegmentUrl = menuData.data.urlName
 
 	const inEvidenzaMenuItems =

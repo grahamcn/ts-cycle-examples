@@ -1,8 +1,8 @@
 export const defaultSecondarySegment = 'calcio'
 export const baseUrl = 'https://vkyyqd7276.execute-api.eu-west-2.amazonaws.com/public/catalog'
-import { MenuItem } from '../sideMenu'
+import { MenuItem } from '../sideMenu.interfaces'
 
-export const containerMenuData: Array<MenuItem> = [{
+export const containerMenuData: MenuItem[] = [{
 	title: 'Home',
 	url: '/'
 }, {
@@ -16,7 +16,7 @@ export const containerMenuData: Array<MenuItem> = [{
 	url: '/rollerball'
 }]
 
-export function staticTertiaryMenuItems(secondaryKey: string): Array<MenuItem> {
+export function staticTertiaryMenuItems(secondaryKey: string): MenuItem[] {
 	return [{
 		title: 'Home',
 		url: `/${secondaryKey}/`

@@ -7,7 +7,7 @@ import { dropRepeats } from './misc/xstream.extra'
 
 import {
 	pick,
-	transformPathToSecondaryDataKey,
+	transformPathToPageDataPath,
 	getPageDataUrl,
 } from './misc/helpers'
 
@@ -27,15 +27,15 @@ interface Sources {
 
 function Sport(sources: Sources): Sinks {
 
-	const secondaryDataKey$ =
+	const pageDataPath$ =
 		sources.History
 			.map(pick('pathname'))
-			.map(transformPathToSecondaryDataKey)
+			.map(transformPathToPageDataPath)
 			.compose(dropRepeats())
 
 	const pageHttp$ =
-		secondaryDataKey$.map(key => ({
-			url: getPageDataUrl(key),
+		pageDataPath$.map(path => ({
+			url: getPageDataUrl(path),
 			'category': 'page-data',
 			lazy: true,
 		}))
