@@ -21,15 +21,20 @@ import GroupedMenus from './groupedMenus'
 import SimpleMenu from './SimpleMenu'
 
 export interface Menu {
-	id: number,
+	id: string|number,
 	title?: string,
-	items: Array<MenuItem>
-	itemGroups: Map<string, any>
+	items?: MenuItem[]
+	groups?: MenuGroup[]
 }
 
 export interface MenuItem {
 	title: string
 	url: string,
+}
+
+export interface MenuGroup  {
+  title: string,
+  items: MenuItem[],
 }
 
 interface State extends Array<Menu> {}
@@ -112,7 +117,7 @@ function SideMenu(sources: Sources): Sinks {
 
 	// one grouped menu, todo
 	const groupedMenusLens = {
-		get: state => state.filter(menu => !!menu.itemsGroups)[0],
+		get: state => state.filter(menu => !!menu.groups)[0],
 		set: (state, childState) => state // ignore updates
 	}
 

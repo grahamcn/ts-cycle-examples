@@ -4,7 +4,7 @@ import {
 	staticTertiaryMenuItems,
 } from './constants'
 
-import {MenuItem} from '../sideMenu'
+import { MenuItem, Menu } from '../sideMenu'
 
 interface PickKey extends Function {
 	(s: Object): string | number | Object // could be others, extend if required
@@ -30,7 +30,7 @@ export function getPageDataUrl(key: string, base: string = baseUrl): string {
 }
 
 export function transformToMenuItemsByCountry(types: any[], secondarySegmentUrl: string): Map<string, Array<MenuItem>> {
-	return types // competitions, with the country name embedded in each type name. eg "england - premier league", "england - chanpionship"
+	return types // competitions, with the country name embedded in each type name. eg "england - premier league"
 		.map(type =>
 			Object.assign({}, type, {
 				country: type.name.split(' - ')[0].trim(),
@@ -38,8 +38,8 @@ export function transformToMenuItemsByCountry(types: any[], secondarySegmentUrl:
 				url: `/${secondarySegmentUrl}/${type.urlName}`,
 			})
     )
-    .map(({url, title, country,}) => ({url, title, country,}))
-		.reduce(groupByKey('country'), new Map())
+    .map(({url, title, country}) => ({url, title, country}))
+    .reduce(groupByKey('country'), new Map())
 }
 
 // reducer fn that groups objects as an array on a Map, keyed by key
@@ -82,7 +82,17 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 			.map((competitions: Array<any>)  => transformToMenuItemsByCountry(competitions, secondarySegmentUrl))
       .map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
 
-	const menuGroups = [{
+  // convert the map to an array of Menus - probably possible to simplify the above
+  const tutteLeCompetizioniMenus: Menu[] = []
+  tutteLeCompetizioniMenuItems.forEach((value, key) => {
+    tutteLeCompetizioniMenus.push({
+      id: key,
+      title: key,
+      items: value
+    })
+  })
+
+	return [{
     id: 1,
 		items: staticTertiaryMenuItems(secondarySegmentUrl),
 	}, {
@@ -92,13 +102,11 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 	}, {
     id: 3,
 		title: 'Tutte Le Competizioni',
-		itemsGroups: Array.from(tutteLeCompetizioniMenuItems),
+		groups: tutteLeCompetizioniMenus,
 	}]
-
-	return menuGroups
 }
 
-// to test tree shaking
+// to test tree shaking at some point
 export function iAmNotCalled() {
   return 'i am not called'
 }

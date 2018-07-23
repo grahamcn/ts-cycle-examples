@@ -2,9 +2,9 @@ import { VNode, DOMSource, div, li } from '@cycle/dom'
 import { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
-import { Menu } from './sideMenu'
+import { MenuGroup } from './sideMenu'
 
-interface State extends Menu {}
+interface State extends MenuGroup {}
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -16,7 +16,10 @@ interface Sources {
 }
 
 function GroupedMenus(sources: Sources): Sinks {
-	const state$ = sources.onion.state$
+  const state$ = sources.onion.state$
+
+  // state is MenuGroup
+  // Lens is items / menus
 
 	const vdom$ =
     state$.map(({title}) =>
