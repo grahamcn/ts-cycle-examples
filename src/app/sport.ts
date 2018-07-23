@@ -27,18 +27,19 @@ interface Sources {
 
 function Sport(sources: Sources): Sinks {
 
-	const pageDataPath$ =
+	const pageDataRequestsPath$ =
 		sources.History
 			.map(pick('pathname'))
 			.map(transformPathToPageDataPath)
-			.compose(dropRepeats())
 
 	const pageHttp$ =
-		pageDataPath$.map(path => ({
-			url: getPageDataUrl(path),
-			'category': 'page-data',
-			lazy: true,
-		}))
+		pageDataRequestsPath$
+			.compose(dropRepeats())
+			.map(path => ({
+				url: getPageDataUrl(path),
+				'category': 'page-data',
+				lazy: true,
+			}))
 
 	const pageData$ =
 		sources.HTTP
@@ -53,11 +54,17 @@ function Sport(sources: Sources): Sinks {
 	const successPageDom$: Stream<VNode> = successPageData$.map(res => div(JSON.stringify(res)))
 	const errorPageDom$: Stream<VNode> = errorPageData$.map(res => div(JSON.stringify(res)))
 
+	const loadingDom$: Stream<VNode> =
+		pageDataRequestsPath$
+			.compose(dropRepeats())
+			.mapTo(div('loading...'))
+
 	const vdom$: Stream<VNode> =
 		xs.merge(
 			successPageDom$,
 			errorPageDom$,
-		).startWith(div('loading...'))
+			loadingDom$,
+		).startWith(div('initializing...'))
 
 	return {
 		DOM: vdom$,

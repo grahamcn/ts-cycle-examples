@@ -48,16 +48,17 @@ function SideMenu(sources: Sources): Sinks {
 		sources.History
 			.map(pick('pathname'))
 			.map(transformPathToSecondaryDataKey)
-			.compose(dropRepeats()) // akin to memoize / shouldComponentUpdate. if we change urls, we don't change menu unless segment 1 changes
 
 	// define a stream of menu data requests
 	const menuHttp$ =
-		secondaryDataKey$.map(key => ({
-			url: getTertiaryMenuDataUrl(key),
-			'category': 'tertiary-menu',
-			// https://github.com/cyclejs/cyclejs/issues/355
-			lazy: true, // cancellable
-		}))
+		secondaryDataKey$
+			.compose(dropRepeats()) // akin to memoize / shouldComponentUpdate. if we change urls, we don't change menu unless segment 1 changes
+			.map(key => ({
+				url: getTertiaryMenuDataUrl(key),
+				'category': 'tertiary-menu',
+				// https://github.com/cyclejs/cyclejs/issues/355
+				lazy: true, // cancellable
+			}))
 
 	const menuData$ =
 		sources.HTTP

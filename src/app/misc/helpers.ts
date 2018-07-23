@@ -22,8 +22,7 @@ export function transformPathToSecondaryDataKey(pathname: string, defaultSeconda
 }
 
 export function transformPathToPageDataPath(path: string, defaultSecondary: string = defaultSecondarySegment): string {
-	console.log(path)
-	return path === '/' ? '/calcio' : path
+	return path === '/' ? `/${defaultSecondary}` : path
 }
 
 export function getTertiaryMenuDataUrl(key: string, base: string = baseUrl): string {
