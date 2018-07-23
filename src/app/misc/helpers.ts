@@ -37,9 +37,9 @@ export function transformToMenuItemsByCountry(types: any[], secondarySegmentUrl:
 				title: type.name.split(' - ')[1].trim(),
 				url: `/${secondarySegmentUrl}/${type.urlName}`,
 			})
-    )
-    .map(({url, title, country}) => ({url, title, country}))
-    .reduce(groupByKey('country'), new Map())
+		)
+		.map(({ url, title, country }) => ({ url, title, country }))
+		.reduce(groupByKey('country'), new Map())
 }
 
 // reducer fn that groups objects as an array on a Map, keyed by key
@@ -68,7 +68,7 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 	const inEvidenzaMenuItems =
 		menuData.data.types
 			.slice(0, 5)
-			.map(({urlName, name}) => {
+			.map(({ urlName, name }) => {
 				return {
 					title: name.split(' - ')[1].trim(),
 					url: `/${secondarySegmentUrl}/${urlName}`,
@@ -79,28 +79,28 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 		[menuData]
 			.map(pick('data'))
 			.map(pick('types'))
-			.map((competitions: Array<any>)  => transformToMenuItemsByCountry(competitions, secondarySegmentUrl))
-      .map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
+			.map((competitions: Array<any>) => transformToMenuItemsByCountry(competitions, secondarySegmentUrl))
+			.map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
 
-  // convert the map to an array of Menus - probably possible to simplify the above
-  const tutteLeCompetizioniMenus: Menu[] = []
-  tutteLeCompetizioniMenuItems.forEach((value, key) => {
-    tutteLeCompetizioniMenus.push({
-      id: key,
-      title: key,
-      items: value
-    })
-  })
+	// convert the map to an array of Menus - probably possible to simplify the above
+	const tutteLeCompetizioniMenus: Menu[] = []
+	tutteLeCompetizioniMenuItems.forEach((value, key) => {
+		tutteLeCompetizioniMenus.push({
+			id: key,
+			title: key,
+			items: value
+		})
+	})
 
 	return [{
-    id: 1,
+		id: 1,
 		items: staticTertiaryMenuItems(secondarySegmentUrl),
 	}, {
-    id: 2,
+		id: 2,
 		title: 'In Evidenza',
 		items: inEvidenzaMenuItems,
 	}, {
-    id: 3,
+		id: 3,
 		title: 'Tutte Le Competizioni',
 		groups: tutteLeCompetizioniMenus,
 	}]
@@ -108,5 +108,5 @@ export function transformToMenuGroups(menuData, secondaryKey = 'calcio', base = 
 
 // to test tree shaking at some point
 export function iAmNotCalled() {
-  return 'i am not called'
+	return 'i am not called'
 }

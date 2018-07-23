@@ -21,7 +21,7 @@ import GroupedMenus from './groupedMenus'
 import SimpleMenu from './SimpleMenu'
 
 export interface Menu {
-	id: string|number,
+	id: string | number,
 	title?: string,
 	items?: MenuItem[]
 	groups?: MenuGroup[]
@@ -32,12 +32,12 @@ export interface MenuItem {
 	url: string,
 }
 
-export interface MenuGroup  {
-  title: string,
-  items: Menu[],
+export interface MenuGroup {
+	title: string,
+	items: Menu[],
 }
 
-interface State extends Array<Menu> {}
+interface State extends Array<Menu> { }
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -48,8 +48,8 @@ interface Sinks {
 
 interface Sources {
 	History: Stream<Location>,
-  HTTP: HTTPSource,
-  DOM: DOMSource,
+	HTTP: HTTPSource,
+	DOM: DOMSource,
 	onion: StateSource<State>
 }
 
@@ -92,15 +92,15 @@ function SideMenu(sources: Sources): Sinks {
 	const menuGroups$: xs<Array<Map<string, MenuItem>>> =
 		successMenuData$.map(transformToMenuGroups)
 
-  const simpleMenuListLens = {
+	const simpleMenuListLens = {
 		get: (state: Array<Menu>) => {
-      return state.filter(menu => !!menu.items)
-    },
-  }
+			return state.filter(menu => !!menu.items)
+		},
+	}
 
 	const SimpleMenuList: any = makeCollection({
-    item: SimpleMenu,
-    itemKey: (item: any) => item.id,
+		item: SimpleMenu,
+		itemKey: (item: any) => item.id,
 		itemScope: key => key,
 		collectSinks: instances => {
 			return {
@@ -120,7 +120,7 @@ function SideMenu(sources: Sources): Sinks {
 	}
 
 	const menuGroupSinks = isolate(GroupedMenus, { onion: groupedMenusLens })(sources)
-  const menuGroupSinksDom$: Stream<VNode> = menuGroupSinks.DOM
+	const menuGroupSinksDom$: Stream<VNode> = menuGroupSinks.DOM
 
 	// VIEW ISH
 
@@ -129,14 +129,14 @@ function SideMenu(sources: Sources): Sinks {
 	const successMenuDom$: Stream<VNode> =
 		xs.combine(
 			listSinksDOM$,
-      menuGroupSinksDom$,
-      // menusSinksDom$,
+			menuGroupSinksDom$,
+			// menusSinksDom$,
 		).map(([listSinksDOM, menuGroupSinksDom]) =>
 			div('.menu', [
-				ul('.menus',[
-          ...listSinksDOM,
-          menuGroupSinksDom,
-        ])
+				ul('.menus', [
+					...listSinksDOM,
+					menuGroupSinksDom,
+				])
 			])
 		)
 
@@ -150,21 +150,21 @@ function SideMenu(sources: Sources): Sinks {
 	// Reducer / state
 	// we iitialize state with an empty array of menu groups, a reducer that returns initial state
 	// as we recieve history events, the menuReducer will update state as menuGroups emits events / groups
-	const defaultReducer$ = xs.of(function() { return [] })
+	const defaultReducer$ = xs.of(function () { return [] })
 
 	const menuReducer$ =
 		menuGroups$.map((menuGroups: Array<any>) =>
 			function reducer(prevState) {
 				return menuGroups
-		})
+			})
 
-  const reducer$ = xs.merge(defaultReducer$, menuReducer$)
+	const reducer$ = xs.merge(defaultReducer$, menuReducer$)
 
-  // history
-  const history$ =
-    xs.merge(
-      listSinksHistory$
-    )
+	// history
+	const history$ =
+		xs.merge(
+			listSinksHistory$
+		)
 
 	return {
 		DOM: vdom$,

@@ -5,7 +5,7 @@ import { StateSource } from 'cycle-onionify'
 import { Menu } from './sideMenu'
 
 interface State extends Menu {
-  title: string, // no ?, should be there for a toggle menu
+	title: string, // no ?, should be there for a toggle menu
 }
 
 interface Sinks {
@@ -17,14 +17,14 @@ interface Sources {
 }
 
 function ToggleMenu(sources: Sources): Sinks {
-  const state$ = sources.onion.state$
+	const state$ = sources.onion.state$
 
 	const vdom$ = xs.of(li(123))
-    // state$.debug(console.log).map(state =>
-    //   li('.tog',
-    //     div('toggle menu - ' + state.title)
-    //   )
-		// )
+	// state$.debug(console.log).map(state =>
+	//   li('.tog',
+	//     div('toggle menu - ' + state.title)
+	//   )
+	// )
 
 	return {
 		DOM: vdom$,
