@@ -96,16 +96,15 @@ function SideMenu(sources: Sources): Sinks {
 		item: SimpleMenu,
 		collectSinks: instances => {
 			return {
-				DOM: instances.pickCombine('DOM') // combine all the dom streams
-					.map(itemVNodes => itemVNodes),
-				History: instances.pickMerge('History').map((h: string) => h) // merge all the history streams
+				DOM: instances.pickCombine('DOM'), // combine all the dom streams
+				History: instances.pickMerge('History')  // merge all the history streams
 			}
 		}
 	})
 
 	const listSinks = isolate(List, { onion: menusLens })(sources) // list idetifies the part of state of loop over
-	const listSinksDOM$: xs<Array<VNode>> = listSinks.DOM
-	const listSinksHistory$: xs<string> = listSinks.History
+	const listSinksDOM$: Stream<Array<VNode>> = listSinks.DOM
+	const listSinksHistory$: Stream<string> = listSinks.History
 
 	// one grouped menu, todo
 	const tutteLeCompetizioniMenuItemsLens = {
