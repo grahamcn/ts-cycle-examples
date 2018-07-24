@@ -41,8 +41,6 @@ interface Sources {
 // Convert to MVI in a copy of this file as an example.
 
 function SideMenu(sources: Sources): Sinks {
-	const state$ = sources.onion.state$
-
 	// define a stream of sport
 	const secondaryDataKey$ =
 		sources.History
@@ -125,8 +123,6 @@ function SideMenu(sources: Sources): Sinks {
 					menuGroupSinksDom,
 				])
 			])
-
-
 		)
 
 	// add loading state

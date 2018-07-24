@@ -12,6 +12,11 @@ import {
 } from './misc/helpers'
 
 import {
+	flattenPageData,
+} from './misc/helpers.data'
+
+
+import {
 	simpleHttpResponseReplaceError,
 } from './misc/helpers.xs'
 
@@ -35,6 +40,7 @@ function Sport(sources: Sources): Sinks {
 	const pageHttp$ =
 		pageDataRequestsPath$
 			.compose(dropRepeats())
+			.debug(console.log)
 			.map(path => ({
 				url: getPageDataUrl(path),
 				'category': 'page-data',
@@ -48,7 +54,10 @@ function Sport(sources: Sources): Sinks {
 			.flatten()
 			.map(res => res.body)
 
-	const successPageData$ = pageData$.filter(data => !data.err)
+	const successPageData$ = pageData$.filter(data => {
+		flattenPageData(data)
+		return !data.err
+	})
 	const errorPageData$ = pageData$.filter(data => !!data.err)
 
 	const successPageDom$: Stream<VNode> = successPageData$.map(res => div(JSON.stringify(res)))
