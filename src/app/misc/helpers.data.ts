@@ -1,10 +1,10 @@
 export interface Competition {
-	id: string
-	name: string
-	urlName: string
 	displayOrder: number
-	preLiveEvents?: Event[]
+	id: string
 	liveEvents?: Event[]
+	name: string
+	preLiveEvents?: Event[]
+	urlName: string
 }
 
 export interface Event {
@@ -40,41 +40,92 @@ export interface Outcome {
 	status: string
 }
 
-const basicEventDetails = (({id, name, urlName, startTime, displayOrder}: Event) => ({id, name, urlName, startTime, displayOrder}))
-const dynamicEventDetails = (({id, status, started, live, }: Event) => ({id, status, started, live,}))
+const eventPassThru = ({id, name, urlName}) => ({
+	eventId: id,
+	eventName: name,
+	eventUrlName: urlName,
+})
 
-export function flattenPageData(pageData): any {
+const marketPassThru = ({id, name}) => ({
+	marketId: id,
+	marketName: name,
+})
 
-	const flattenedData =
+const competitionPassThru = ({id, name, urlName}) => ({
+	competitionId: id,
+	competitionName: name,
+	competitionUrlName: urlName,
+})
+
+const pickCompetitionProps = ({id, urlName, name, displayOrder}) => ({id, urlName, name, displayOrder})
+
+// undecided if we need any more than id yet populated in the map
+// or if this should be a map at all, as we may need an array (ideally ordered)
+// see how this falls out.
+function createIdMap(array) {
+	return array
+		.reduce((map, object) => {
+			return map.set(object.id, {})
+		}, new Map())
+}
+
+export function flattenPageData(pageData) {
+
+	const flattenedDataMap: Map<string, Map<string, Competition|Event|Market|Outcome>> =
 		pageData.data.types
-			.reduce((dataMap, competition) => {
+			.reduce((accumulatedDataMap, competition) => {
 
-				// we don't need comps, simple as.
-				dataMap.competitions[competition.urlName] = {
+				const allCompetitionEvents =
+					(competition.preLiveEvents || []).concat(competition.liveEvents || [])
+
+				// we don't need comps, simple as. i think that holds up. maybe :)
+				// we might need something.
+				// we always group on an event property - live, date, competition?
+				// we currently group by competition, then by date, on the home page
+				// consider coupons, outrights and the like.
+				accumulatedDataMap.competitions.set(competition.urlName, {
 					...competition,
-					events: (competition.preLiveEvents || []).map(basicEventDetails)
-				}
+					...pickCompetitionProps(competition), // we don't want live / prelive keys
+					event: createIdMap(allCompetitionEvents),
+				})
 
-				// an event update prelive to live mean the competition events are resorted.
-				// the events in the mapState world are only connecting to their status state, as it were
-				const allCompetitionEvents = (competition.preLiveEvents || []).concat(competition.liveEvents || [])
-
-				allCompetitionEvents
-					.forEach(event => {
-						dataMap.events[event.id] = {
-							...dynamicEventDetails(event),
-						}
+				// an event update prelive to live mean the competition events are re-sorted.
+				// that just might be by the by
+				allCompetitionEvents.forEach(event => {
+					accumulatedDataMap.events.set(event.id, {
+						...competitionPassThru(competition),
+						...event,
+						markets: createIdMap(event.markets)
 					})
 
-				return dataMap
+					event.markets.forEach(market => {
+						accumulatedDataMap.markets.set(market.id, {
+							...competitionPassThru(competition), // unrequired?
+							...eventPassThru(event), // unrequired?
+							...market,
+							outcomes: createIdMap(market.outcomes)
+						})
+
+						// outcomes turn into selections, they need all details embedded
+						// such that they can be displayed in the Betslip selections list
+						market.outcomes.forEach(outcome => {
+							accumulatedDataMap.outcomes.set(outcome.id, {
+								...competitionPassThru(competition),
+								...eventPassThru(event),
+								...marketPassThru(market),
+								...outcome,
+							})
+						})
+					})
+				})
+
+				return accumulatedDataMap
 			}, {
-				competitions: {},
-				events: {},
-				markets: {},
-				outcomes: {},
+				competitions: new Map(),
+				events: new Map(),
+				markets: new Map(),
+				outcomes: new Map(),
 			})
 
-	console.log(flattenedData)
-
-	return pageData
+	return flattenedDataMap
 }

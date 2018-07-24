@@ -40,7 +40,6 @@ function Sport(sources: Sources): Sinks {
 	const pageHttp$ =
 		pageDataRequestsPath$
 			.compose(dropRepeats())
-			.debug(console.log)
 			.map(path => ({
 				url: getPageDataUrl(path),
 				'category': 'page-data',
