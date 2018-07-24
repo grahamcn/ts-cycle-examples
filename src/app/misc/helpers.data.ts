@@ -70,6 +70,11 @@ function createIdMap(array) {
 }
 
 export function flattenPageData(pageData) {
+	// hack or generic competition end point, which doesn't have types
+	// will need addressing ie transforming to state shape.
+	if (!pageData || !pageData.types) {
+		return pageData
+	}
 
 	const flattenedDataMap: Map<string, Map<string, Competition|Event|Market|Outcome>> =
 		pageData.data.types

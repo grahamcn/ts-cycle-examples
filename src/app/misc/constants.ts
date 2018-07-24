@@ -19,7 +19,7 @@ export const containerMenuData: MenuItem[] = [{
 export function staticTertiaryMenuItems(secondaryKey: string): MenuItem[] {
 	return [{
 		title: 'Home',
-		url: `/${secondaryKey}/`
+		url: `/${secondaryKey}`
 	}, {
 		title: 'Live',
 		url: `/${secondaryKey}/live`,
