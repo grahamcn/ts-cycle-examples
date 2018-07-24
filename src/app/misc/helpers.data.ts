@@ -72,7 +72,7 @@ function createIdMap(array) {
 export function flattenPageData(pageData) {
 	// hack or generic competition end point, which doesn't have types
 	// will need addressing ie transforming to state shape.
-	if (!pageData || !pageData.types) {
+	if (!pageData || !pageData.data || !pageData.data.types) {
 		return pageData
 	}
 

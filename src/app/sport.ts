@@ -53,14 +53,19 @@ function Sport(sources: Sources): Sinks {
 			.flatten()
 			.map(res => res.body)
 
-	const successPageData$ = pageData$.filter(data => {
-		flattenPageData(data)
-		return !data.err
-	})
-	const errorPageData$ = pageData$.filter(data => !!data.err)
+	const successPageData$ =
+		pageData$
+			.filter(data => !data.err)
+			.map(flattenPageData)
 
-	const successPageDom$: Stream<VNode> = successPageData$.map(res => div(JSON.stringify(res)))
-	const errorPageDom$: Stream<VNode> = errorPageData$.map(res => div(JSON.stringify(res)))
+	const errorPageData$ =
+		pageData$.filter(data => !!data.err)
+
+	const successPageDom$: Stream<VNode> =
+		successPageData$.map(res => div(JSON.stringify(res)))
+
+	const errorPageDom$: Stream<VNode> =
+		errorPageData$.map(res => div(JSON.stringify(res)))
 
 	const loadingDom$: Stream<VNode> =
 		pageDataRequestsPath$
