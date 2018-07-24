@@ -49,6 +49,7 @@ export function flattenPageData(pageData): any {
 		pageData.data.types
 			.reduce((dataMap, competition) => {
 
+				// we don't need comps, simple as.
 				dataMap.competitions[competition.urlName] = {
 					...competition,
 					events: (competition.preLiveEvents || []).map(basicEventDetails)
@@ -56,9 +57,9 @@ export function flattenPageData(pageData): any {
 
 				// an event update prelive to live mean the competition events are resorted.
 				// the events in the mapState world are only connecting to their status state, as it were
+				const allCompetitionEvents = (competition.preLiveEvents || []).concat(competition.liveEvents || [])
 
-				const processEvents =
-					(competition.preLiveEvents || []).concat(competition.liveEvents || [])
+				allCompetitionEvents
 					.forEach(event => {
 						dataMap.events[event.id] = {
 							...dynamicEventDetails(event),
