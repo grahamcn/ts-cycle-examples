@@ -1,6 +1,7 @@
 import { MenuItem, Menu } from '../sideMenu.interfaces'
 import { ul, h4, li, a, VNode } from '@cycle/dom'
 
+// render list title, list item function
 export function renderMenuItems({ title, items }: Menu): VNode {
 	return (
 		li('.menu__list', [
@@ -12,6 +13,7 @@ export function renderMenuItems({ title, items }: Menu): VNode {
 	)
 }
 
+// render listlink
 export function renderMenuItem(item: MenuItem): VNode {
 	return li('.menu__item',
 		a('.menu__link', {

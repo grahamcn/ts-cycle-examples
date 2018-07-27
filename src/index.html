@@ -9,15 +9,19 @@
 	<script src="http://socket-io-client.s3-website.eu-west-2.amazonaws.com/socket.io.client.js"></script>
 	<script>
 		var socket = io.connect( 'http://localhost:8000')
+		// var socket = io.connect( 'http://ec2-18-130-224-107.eu-west-2.compute.amazonaws.com:8000')
 
 		socket.on('connect', function(){
 			console.log('Connected')
 		});
 
-		socket.on('event', function(data){
+		socket.on('pushUpdate', function(data){
 			console.log(event)
 		});
 
-		socket.on('disconnect', function() {})
+		socket.emit('liveSportsConfig', {
+			competitions: 0.1,
+		})
+
 	</script>
 </html>

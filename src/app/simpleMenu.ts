@@ -19,6 +19,7 @@ interface Sources {
 }
 
 function SimpleMenu(sources: Sources): Sinks {
+	// this is just a contexulaized list of links
 	const state$ = sources.onion.state$
 
 	const history$ =
