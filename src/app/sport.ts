@@ -62,22 +62,22 @@ function Sport(sources: Sources): Sinks {
 		pageData$.filter(data => !!data.err)
 
 	const successPageDom$: Stream<VNode> =
-		successPageData$.map(res => div(JSON.stringify(res)))
+		successPageData$.map(res => div('.sport', JSON.stringify(res)))
 
 	const errorPageDom$: Stream<VNode> =
-		errorPageData$.map(res => div(JSON.stringify(res)))
+		errorPageData$.map(res => div('.sport', res.err.message))
 
 	const loadingDom$: Stream<VNode> =
 		pageDataRequestsPath$
 			.compose(dropRepeats())
-			.mapTo(div('loading...'))
+			.mapTo(div('.sport', 'loading...'))
 
 	const vdom$: Stream<VNode> =
 		xs.merge(
 			successPageDom$,
 			errorPageDom$,
 			loadingDom$,
-		).startWith(div('initializing...'))
+		).startWith(div('.sport', 'initializing...'))
 
 	return {
 		DOM: vdom$,

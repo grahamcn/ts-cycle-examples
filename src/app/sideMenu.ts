@@ -109,7 +109,7 @@ function SideMenu(sources: Sources): Sinks {
 
 	// VIEW ISH
 
-	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(() => div('No menu data for this segment'))
+	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(() => div('.menu', 'No menu data for this segment'))
 
 	const successMenuDom$: Stream<VNode> =
 		xs.combine(
