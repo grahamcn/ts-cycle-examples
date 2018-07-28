@@ -1,32 +1,9 @@
 <!DOCTYPE html>
 <html lang="it">
   <head>
-    <title>POC HTML Template</title>
+    <title>CycleJS Examples</title>
   </head>
   <body>
     <div id="app"></div>
 	</body>
-	<script src="http://socket-io-client.s3-website.eu-west-2.amazonaws.com/socket.io.client.js"></script>
-	<script>
-		// var socket = io.connect( 'http://localhost:8000')
-		var socket = io.connect( 'http://ec2-18-130-224-107.eu-west-2.compute.amazonaws.com:8000')
-
-		socket.on('connect', function(){
-			console.log('Connected')
-		});
-
-		socket.on('pushUpdate', function(data){
-			console.log(event)
-		});
-
-		socket.emit('liveSportsConfig', {
-			intervals: {
-				competition: 3000,
-				event: 2000,
-				market: 1000,
-				outcome: 100,
-			}
-		})
-
-	</script>
 </html>
