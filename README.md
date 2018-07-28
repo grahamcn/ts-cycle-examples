@@ -1,3 +1,3 @@
-# ts-cycle-sportsbook
-Typescript Cycle.js sportsbook PoC
+# ts-cycle-examples
+Typescript Cycle.js example components
 
