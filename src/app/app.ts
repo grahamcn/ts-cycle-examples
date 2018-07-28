@@ -6,6 +6,7 @@ import { Reducer, StateSource } from 'cycle-onionify'
 import StateComponent from './state'
 import ListComponent from './list'
 import DefaultComponent from './default'
+import DragComponent from './drag'
 
 import '../scss/styles.scss'
 
@@ -32,6 +33,9 @@ const menu = [{
 }, {
 	title: 'list',
 	url: '/list',
+}, {
+	title: 'drag',
+	url: '/drag',
 }]
 
 function renderMenuItem(menuItem) {
@@ -60,6 +64,8 @@ function App(sources: Sources): Sinks {
 					return StateComponent(sources)
 				case '/list':
 					return ListComponent(sources)
+					case '/drag':
+					return DragComponent(sources)
 				default:
 					return DefaultComponent(sources)
 			}
