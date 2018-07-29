@@ -1,5 +1,6 @@
 import xs, { Stream } from 'xstream'
 import { div, VNode, ul, li, a, DOMSource, } from '@cycle/dom'
+import isolate from '@cycle/isolate'
 import { Location } from 'history'
 import { Reducer, StateSource } from 'cycle-onionify'
 
@@ -57,11 +58,19 @@ function App(sources: Sources): Sinks {
 		sources.History
 			.map(({pathname}) => pathname)
 
+	const menuDom$ =
+		xs.of(menu)
+			.map(menuItems =>
+				ul('.list',
+					menuItems.map(renderMenuItem)
+			)
+		)
+
 	const component$: any =
 		path$.map(path => {
 			switch (path) {
 				case '/state':
-					return StateComponent(sources)
+					return isolate(StateComponent)(sources)
 				case '/list':
 					return ListComponent(sources)
 					case '/drag':
@@ -72,21 +81,13 @@ function App(sources: Sources): Sinks {
 		})
 
 	const componentDom$: Stream<VNode> =
-		component$.map(componentSource => componentSource.DOM)
+		component$.map(componentSource => componentSource.DOM || xs.empty())
 			.flatten()
-			.map(dom =>
-				div('.component', dom)
-			)
+			.map(dom => div('.component', dom))
 
-	// repeat above for history, http wen required.
-
-	const menuDom$ =
-		xs.of(menu)
-			.map(menuItems =>
-				ul('.list',
-					menuItems.map(renderMenuItem)
-			)
-		)
+	const componentOnion$: Stream<Reducer<State>> =
+		component$.map(componentSource => componentSource.onion || xs.empty())
+			.flatten()
 
 	const history$ =
 		sources.DOM
@@ -97,8 +98,6 @@ function App(sources: Sources): Sinks {
 				const target: EventTarget = event.target
 				return target['dataset'].dataUrl
 			})
-
-
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
@@ -113,7 +112,7 @@ function App(sources: Sources): Sinks {
 
 	return {
 		DOM: vdom$,
-		onion: xs.never(),
+		onion: componentOnion$,
 		History: history$,
 	}
 }

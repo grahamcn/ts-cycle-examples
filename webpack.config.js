@@ -29,7 +29,7 @@ module.exports = {
     filename: '[name].bundle.[hash].js',
     publicPath: '/',
 	},
-  // devtool: isDevelopment ? 'source-map' : undefined,
+  devtool: isDevelopment ? 'source-map' : undefined,
   devServer: {
     contentBase: './dist/',
 		hot: true,

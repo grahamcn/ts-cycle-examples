@@ -49,6 +49,16 @@ html {
   height: 100%;
 }
 
+button {
+	padding: 8px;
+	margin: 4px;
+}
+
+.code {
+	font-family: 'Courier New';
+	margin: 2px 0px 2px 8px;
+}
+
 .container {
   display: flex;
   flex-direction: row;
