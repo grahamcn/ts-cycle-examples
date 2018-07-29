@@ -1,8 +1,6 @@
 import xs, { Stream } from 'xstream'
 import { div, VNode,  } from '@cycle/dom'
 
-interface State { }
-
 interface Sinks {
 	DOM: Stream<VNode>,
 }

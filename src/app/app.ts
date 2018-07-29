@@ -56,7 +56,7 @@ function App(sources: Sources): Sinks {
 				case '/state':
 					return isolate(StateComponent)(sources)
 				case '/list':
-					return ListComponent(sources)
+					return isolate(ListComponent)(sources)
 					case '/drag':
 					return DragComponent(sources)
 				default:
