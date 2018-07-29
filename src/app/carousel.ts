@@ -7,10 +7,10 @@ interface Sinks {
 
 interface Sources {}
 
-function FooBar(sources: Sources): Sinks {
+function Carousel(sources: Sources): Sinks {
 	const vdom$: Stream<VNode> =
 		xs.of(
-			div('.fooBar', 'fooBar')
+			div('.carousel', 'carousel')
 		)
 
 	return {
@@ -18,4 +18,4 @@ function FooBar(sources: Sources): Sinks {
 	}
 }
 
-export default FooBar
+export default Carousel

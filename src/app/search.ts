@@ -1,18 +1,16 @@
 import xs, { Stream } from 'xstream'
 import { div, VNode,  } from '@cycle/dom'
 
-interface State { }
-
 interface Sinks {
 	DOM: Stream<VNode>,
 }
 
 interface Sources {}
 
-function Default(sources: Sources): Sinks {
+function Search(sources: Sources): Sinks {
 	const vdom$: Stream<VNode> =
 		xs.of(
-			div('.default', 'default')
+			div('.search', 'search')
 		)
 
 	return {
@@ -20,4 +18,4 @@ function Default(sources: Sources): Sinks {
 	}
 }
 
-export default Default
+export default Search
