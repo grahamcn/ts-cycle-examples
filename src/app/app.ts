@@ -4,7 +4,7 @@ import isolate from '@cycle/isolate'
 import { Location } from 'history'
 import { Reducer, StateSource } from 'cycle-onionify'
 
-import { menu, renderMenuItem} from './menu'
+import { renderMenu } from './menu'
 import StateComponent from './state'
 import ListComponent from './list'
 import DefaultComponent from './default'
@@ -37,13 +37,8 @@ function App(sources: Sources): Sinks {
 		sources.History
 			.map(({pathname}) => pathname)
 
-	const menuDom$ =
-		xs.of(menu)
-			.map(menuItems =>
-				ul('.list',
-					menuItems.map(renderMenuItem)
-			)
-		)
+	const menuVDom = renderMenu()
+	const menuDom$ = xs.of(menuVDom)
 
 	const history$ =
 		sources.DOM

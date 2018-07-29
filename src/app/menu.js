@@ -1,4 +1,6 @@
-export const menu = [{
+import { ul, li, a, } from '@cycle/dom'
+
+const menuItems = [{
 	title: 'default',
 	url: '/',
 }, {
@@ -12,7 +14,7 @@ export const menu = [{
 	url: '/drag',
 }]
 
-export function renderMenuItem(menuItem) {
+function renderMenuItem(menuItem) {
 	return li('.list-item',
 		a('.link', {
 			attrs: {
@@ -22,5 +24,11 @@ export function renderMenuItem(menuItem) {
 				dataUrl: menuItem.url
 			}
 		}, menuItem.title)
+	)
+}
+
+export function renderMenu() {
+	return ul('.list',
+		menuItems.map(renderMenuItem)
 	)
 }
