@@ -12,6 +12,11 @@ import DragComponent from './drag'
 
 import '../scss/styles.scss'
 
+interface Component extends Object {
+	onion?: Stream<Reducer<State>>
+	DOM?: Stream<VNode>
+}
+
 interface State { }
 
 interface Sinks {
@@ -50,7 +55,7 @@ function App(sources: Sources): Sinks {
 				return target['dataset'].dataUrl
 			})
 
-	const component$: any =
+	const componentSinks$: Stream<Component> =
 		path$.map(path => {
 			switch (path) {
 				case '/state':
@@ -65,12 +70,12 @@ function App(sources: Sources): Sinks {
 		})
 
 	const componentDom$: Stream<VNode> =
-		component$.map(componentSource => componentSource.DOM || xs.empty())
+		componentSinks$.map(componentSinks => componentSinks.DOM || xs.empty())
 			.flatten()
 			.map(dom => div('.component', dom))
 
 	const componentOnion$: Stream<Reducer<State>> =
-		component$.map(componentSource => componentSource.onion || xs.empty())
+		componentSinks$.map(componentSinks => componentSinks.onion || xs.empty())
 			.flatten()
 
 	const vdom$: Stream<VNode> =
