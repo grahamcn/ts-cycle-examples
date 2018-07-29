@@ -4,6 +4,7 @@ import isolate from '@cycle/isolate'
 import { Location } from 'history'
 import { Reducer, StateSource } from 'cycle-onionify'
 
+import { menu, renderMenuItem} from './menu'
 import StateComponent from './state'
 import ListComponent from './list'
 import DefaultComponent from './default'
@@ -25,33 +26,6 @@ interface Sources {
 	onion: StateSource<State>
 }
 
-const menu = [{
-	title: 'default',
-	url: '/',
-}, {
-	title: 'state',
-	url: '/state',
-}, {
-	title: 'list',
-	url: '/list',
-}, {
-	title: 'drag',
-	url: '/drag',
-}]
-
-function renderMenuItem(menuItem) {
-	return li('.list-item',
-		a('.link', {
-			attrs: {
-				href: menuItem.url,
-			},
-			dataset: {
-				dataUrl: menuItem.url
-			}
-		}, menuItem.title)
-	)
-}
-
 function App(sources: Sources): Sinks {
 
 	const path$: Stream<string> =
@@ -65,6 +39,16 @@ function App(sources: Sources): Sinks {
 					menuItems.map(renderMenuItem)
 			)
 		)
+
+	const history$ =
+		sources.DOM
+			.select('.link')
+			.events('click')
+			.map((e: MouseEvent) => {
+				event.preventDefault()
+				const target: EventTarget = event.target
+				return target['dataset'].dataUrl
+			})
 
 	const component$: any =
 		path$.map(path => {
@@ -88,16 +72,6 @@ function App(sources: Sources): Sinks {
 	const componentOnion$: Stream<Reducer<State>> =
 		component$.map(componentSource => componentSource.onion || xs.empty())
 			.flatten()
-
-	const history$ =
-		sources.DOM
-			.select('.link')
-			.events('click')
-			.map((e: MouseEvent) => {
-				event.preventDefault()
-				const target: EventTarget = event.target
-				return target['dataset'].dataUrl
-			})
 
 	const vdom$: Stream<VNode> =
 		xs.combine(

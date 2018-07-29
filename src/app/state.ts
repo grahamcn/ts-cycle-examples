@@ -16,7 +16,7 @@ interface Sources {
 	onion: StateSource<State>
 }
 
-function PrimitiveState(sources: Sources): Sinks {
+function State(sources: Sources): Sinks {
 	const state$: Stream<State> = sources.onion.state$
 
 	// set initial state with a default reducer
@@ -24,18 +24,17 @@ function PrimitiveState(sources: Sources): Sinks {
 	const defaultReducer$: Stream<Reducer<State>> =
 		xs.of(function defaultReducer(prevState: State): State {
 			if (typeof prevState === 'undefined') {
-				return {count: 0} // Parent didn't provide state for the child, so initialize it.
+				return { count: 0 } // Parent didn't provide state for the child, so initialize it.
 			} else {
 				return prevState // Let's just use the state given from the parent.
 			}
 		})
 
 	// map a click on increment button to a reducer function applied to state
-	const incrementReducer$: Stream<Reducer<State>>  =
+	const incrementReducer$: Stream<Reducer<State>> =
 		sources.DOM.select('.increment').events('click')
 			.mapTo(function incrementReducer(prev: State): State {
 				return {
-					...prev,
 					count: prev.count + 1
 				}
 			})
@@ -61,4 +60,4 @@ function PrimitiveState(sources: Sources): Sinks {
 	}
 }
 
-export default PrimitiveState
+export default State
