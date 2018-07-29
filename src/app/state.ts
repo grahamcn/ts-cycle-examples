@@ -19,7 +19,7 @@ interface Sources {
 function PrimitiveState(sources: Sources): Sinks {
 	const state$: Stream<State> = sources.onion.state$
 
-	// set initial state with a default reduce
+	// set initial state with a default reducer
 	// it is a good idea to use a defaultReducer$ instead of an initialReducer$, as a rule of thumb
 	const defaultReducer$: Stream<Reducer<State>> =
 		xs.of(function defaultReducer(prevState: State): State {
