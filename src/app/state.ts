@@ -9,6 +9,7 @@ interface State {
 interface Sinks {
 	DOM: Stream<VNode>
 	onion: Stream<Reducer<State>>
+	Log: Stream<string>
 }
 
 interface Sources {
@@ -31,13 +32,17 @@ function State(sources: Sources): Sinks {
 		})
 
 	// map a click on increment button to a reducer function applied to state
+	const incrementClick$ = sources.DOM.select('.increment').events('click')
 	const incrementReducer$: Stream<Reducer<State>> =
-		sources.DOM.select('.increment').events('click')
+		incrementClick$
 			.mapTo(function incrementReducer(prev: State): State {
 				return {
 					count: prev.count + 1
 				}
 			})
+
+	// we created the const as we're going to log these too.
+	const stateLog$ = incrementClick$.mapTo('.increment clicked')
 
 	// merge all the streams of reducer functions that will be applied to state
 	const reducer$: Stream<Reducer<State>> =
@@ -57,6 +62,7 @@ function State(sources: Sources): Sinks {
 	return {
 		DOM: vdom$,
 		onion: reducer$,
+		Log: stateLog$,
 	}
 }
 

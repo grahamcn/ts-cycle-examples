@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode, ul, li, a, DOMSource, } from '@cycle/dom'
+import { div, VNode, ul, li, a, DOMSource, map, } from '@cycle/dom'
 import isolate from '@cycle/isolate'
 import { Location } from 'history'
 import { Reducer, StateSource } from 'cycle-onionify'
@@ -11,10 +11,13 @@ import DefaultComponent from './default'
 import DragComponent from './drag'
 
 import '../scss/styles.scss'
+import Logger from './logger'
+import { buffer}  from './xstream.extra'
 
 interface Component extends Object {
 	onion?: Stream<Reducer<State>>
 	DOM?: Stream<VNode>
+	Log?: Stream<string>
 }
 
 interface State { }
@@ -23,6 +26,7 @@ interface Sinks {
 	DOM: Stream<VNode>
 	onion: Stream<Reducer<State>>
 	History: Stream<string>
+	Log: Stream<string>
 }
 
 interface Sources {
@@ -73,6 +77,33 @@ function App(sources: Sources): Sinks {
 		componentSinks$.map(componentSinks => componentSinks.onion || xs.empty())
 			.flatten()
 
+	const componentLog$: Stream<string> =
+		componentSinks$.map(componentSinks => componentSinks.Log || xs.empty())
+			.flatten()
+
+	// logging... AOP for anything none isolated (not super useful perhaps)
+	const loggerLog$ = Logger(sources).Log
+
+	// merge those logs with all child logs
+	const appLog$ =
+		xs.merge(
+			loggerLog$,
+			componentLog$,
+		)
+
+	// buffer the log$ for 5 seconds.
+	// this could equally be tied into request animation frame, say, or while page data is loading is triggered.
+	const separator = xs.periodic(5000)
+	// the below gives a stream of arrays of strings.
+	const bufferedLog$: Stream<string[]> = appLog$.compose(buffer(separator))
+
+	// convert this to stream of strings
+	const explodedBuffered$: Stream<string> =
+		bufferedLog$.map((arrayOfString: string[]): Stream<string> =>
+				xs.from(arrayOfString)
+			).flatten()
+
+	// dom is the menu vdom node combined with the child component vdom node
 	const vdom$: Stream<VNode> =
 		xs.combine(
 			menuDom$,
@@ -88,6 +119,7 @@ function App(sources: Sources): Sinks {
 		DOM: vdom$,
 		onion: componentOnion$,
 		History: history$,
+		Log: explodedBuffered$,
 	}
 }
 
