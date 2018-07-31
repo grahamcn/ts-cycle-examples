@@ -76,3 +76,22 @@ button {
 	flex: 1;
 }
 
+.carousel {
+	position: relative;
+	display: flex;
+
+	nav, nav ul {
+		display: flex;
+		flex: 1;
+		flex-direction: row;
+		justify-content: center;
+	}
+
+	nav {
+		margin-top: 216px;
+	}
+
+	nav ul {
+		list-style: none;
+	}
+}

@@ -13,6 +13,7 @@ import DragComponent from './drag'
 import '../scss/styles.scss'
 import Logger from './logger'
 import { buffer}  from './xstream.extra'
+import Carousel from './carousel';
 
 interface Component extends Object {
 	onion?: Stream<Reducer<State>>
@@ -61,8 +62,10 @@ function App(sources: Sources): Sinks {
 					return isolate(StateComponent)(sources)
 				case '/list':
 					return isolate(ListComponent)(sources)
-					case '/drag':
+				case '/drag':
 					return DragComponent(sources)
+				case '/carousel':
+					return Carousel(sources)
 				default:
 					return DefaultComponent(sources)
 			}

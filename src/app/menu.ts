@@ -12,6 +12,9 @@ const menuItems = [{
 }, {
 	title: 'drag',
 	url: '/drag',
+}, {
+	title: 'carousel',
+	url: '/carousel',
 }]
 
 function renderMenuItem(menuItem) {
