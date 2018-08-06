@@ -108,7 +108,7 @@ function Carousel(sources: Sources): Sinks {
 										dataset: {
 											dataSlideOffset: (selectedIndex - index) * -1
 										}
-									}, index)
+									}, index + 1)
 								)
 							),
 						),
