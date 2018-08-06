@@ -7,6 +7,8 @@ import { Reducer, StateSource } from 'cycle-onionify'
 import { renderMenu } from './menu'
 import StateComponent from './state'
 import ChangeUrlComponent from './changeUrl'
+import CombineComponent from './combine'
+import MergeComponent from './merge'
 import ListComponent from './list'
 import DefaultComponent from './default'
 import DragComponent from './drag'
@@ -60,6 +62,10 @@ function App(sources: Sources): Sinks {
 	const componentSinks$: Stream<Component> =
 		path$.map(path => {
 			switch (path) {
+				case '/combine':
+					return CombineComponent(sources)
+				case '/merge':
+					return MergeComponent(sources)
 				case '/changeUrl':
 					return ChangeUrlComponent(sources)
 				case '/state':

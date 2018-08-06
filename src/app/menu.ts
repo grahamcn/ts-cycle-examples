@@ -4,6 +4,12 @@ const menuItems = [{
 	title: 'default',
 	url: '/',
 }, {
+	title: 'combine',
+	url: '/combine',
+}, {
+	title: 'merge',
+	url: '/merge',
+}, {
 	title: 'change url',
 	url: '/changeUrl',
 }, {

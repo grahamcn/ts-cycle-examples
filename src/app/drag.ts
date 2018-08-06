@@ -16,20 +16,13 @@ function Drag(sources: Sources): Sinks {
 
 	const drags$: Stream<MouseEvent> =
 		mouseDown$
-			.map(() =>
-				mouseMove$
-					.endWhen(mouseUp$)
-			)
+			.map(() => mouseMove$.endWhen(mouseUp$))
 			.flatten()
 
 	const vdom$: Stream<VNode> =
 		drags$
-			.map((mouseMove: MouseEvent) =>
-				div(`{ x: ${mouseMove.x}, y: ${mouseMove.y} }`)
-			)
-			.startWith(
-				div('Drag over container element to see coordinates')
-			)
+			.map((mouseMove: MouseEvent) => div(`{ x: ${mouseMove.x}, y: ${mouseMove.y} }`))
+			.startWith(div('Drag over container element to see coordinates'))
 
 	return {
 		DOM: vdom$,
