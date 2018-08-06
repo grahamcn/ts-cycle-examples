@@ -1,6 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode, h2, nav, button, ul, li, DOMSource,  } from '@cycle/dom'
-import { request } from 'http';
+import { div, VNode, nav, button, ul, li, DOMSource } from '@cycle/dom'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -21,8 +20,7 @@ const slidesData = [
 // this could be a good example to refactor to MVI
 
 function Carousel(sources: Sources): Sinks {
-
-	const slideIndexOffset$: Stream<number> =
+	const directOffset$: Stream<number> =
 		sources.DOM
 			.select('.goToslide')
 			.events('click')
@@ -31,13 +29,13 @@ function Carousel(sources: Sources): Sinks {
 				return parseInt(target['dataset'].dataSlideOffset)
 			})
 
-	const nextOffset$ = sources.DOM.select('.next').events('click').mapTo(1)
-	const prevOffset$ = sources.DOM.select('.prev').events('click').mapTo(-1)
+	const nextOffset$: Stream<number> = sources.DOM.select('.next').events('click').mapTo(1)
+	const prevOffset$: Stream<number> = sources.DOM.select('.prev').events('click').mapTo(-1)
 
 	// any click on those will reset the timer, so let's create that stream of clicks.
 	const carouselControlClick$: Stream<any> =
 		xs.merge(
-			slideIndexOffset$,
+			directOffset$,
 			prevOffset$,
 			nextOffset$,
 		)
@@ -45,21 +43,19 @@ function Carousel(sources: Sources): Sinks {
 	const timerOffset$: Stream<number> =
 		carouselControlClick$
 			.startWith(0)
-			.map(() =>
-				xs.periodic(2000)
-			)
-			.flatten()
+			.map(() => xs.periodic(3000))
+			.flatten() // switch latest, in terms of flattening strategies
 			.mapTo(1)
 
-	const selectedIndex$ =
+	const slideIndex$: Stream<number> =
 		xs.merge(
 			timerOffset$,
-			slideIndexOffset$,
+			directOffset$,
 			nextOffset$,
 			prevOffset$,
 		).fold((acc, offset) => {
 			const requestedSlide = acc + offset
-
+			// fix and return any boundry breaches
 			if (requestedSlide < 0) {
 				return slidesData.length - 1
 			} else if (requestedSlide > slidesData.length - 1) {
@@ -67,17 +63,19 @@ function Carousel(sources: Sources): Sinks {
 			}
 
 			return requestedSlide
-		}, 0)
+		}, 0) // start with index 0
 
+	// the animations work on entry & exit - one slide div is displayed at a given time
 	const vdom$: Stream<VNode> =
-		selectedIndex$
-			.map(selectedIndex =>
+		slideIndex$
+			.map(slideIndex =>
 				div('.carousel', [
 					...slidesData
 						.map((slide, index) =>
-							index !== selectedIndex ? undefined :
+							index !== slideIndex ? undefined :
 								div(`.slide .slide-${index}`, {
 									style: {
+										// basic formatting
 										backgroundColor: 'grey',
 										display: 'flex',
 										alignItems: 'center',
@@ -85,7 +83,8 @@ function Carousel(sources: Sources): Sinks {
 										position: 'absolute',
 										width: '100%',
 										height: '200px',
-										transition: 'opacity 500ms', // animation stuff starts here
+										// required animation stuff starts from here
+										transition: 'opacity 500ms',
 										opacity: 0.01,
 										delayed: {
 											opacity: 1,
@@ -93,6 +92,7 @@ function Carousel(sources: Sources): Sinks {
 										remove: {
 											opacity: 0,
 										}
+										// end animation
 									}
 								}, slide)
 						),
@@ -104,16 +104,19 @@ function Carousel(sources: Sources): Sinks {
 									// I've had to change the class too as the dataset change does not
 									// get picked up / cause a re-render. that's quite interesting, and
 									// potentially useful to know
-									button(`.goToslide offset-${selectedIndex - index}`, {
+									button(`.goToslide offset-${slideIndex - index}`, {
+										style: {
+											backgroundColor: slideIndex === index ? '#b2f7bb' : 'initial'
+										},
 										dataset: {
-											dataSlideOffset: (selectedIndex - index) * -1
+											dataSlideOffset: (slideIndex - index) * -1
 										}
 									}, index + 1)
 								)
 							),
 						),
 						button('.next', 'Next'),
-						])
+					])
 				])
 			)
 
