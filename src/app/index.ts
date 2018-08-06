@@ -85,6 +85,7 @@ function App(sources: Sources): Sinks {
 		componentSinks$.map(componentSinks => componentSinks.DOM || xs.empty())
 			.flatten()
 			.map(dom => div('.component', dom))
+			.startWith(undefined)
 
 	const componentOnion$: Stream<Reducer<State>> =
 		componentSinks$.map(componentSinks => componentSinks.onion || xs.empty())

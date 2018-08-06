@@ -1,5 +1,5 @@
 import { Stream } from 'xstream'
-import { div, VNode, DOMSource,  } from '@cycle/dom'
+import { div, VNode, DOMSource, h2, p, } from '@cycle/dom'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -22,7 +22,14 @@ function Drag(sources: Sources): Sinks {
 	const vdom$: Stream<VNode> =
 		drags$
 			.map((mouseMove: MouseEvent) => div(`{ x: ${mouseMove.x}, y: ${mouseMove.y} }`))
-			.startWith(div('Drag over container element to see coordinates'))
+			.startWith(undefined)
+			.map(dom =>
+				div([
+					h2('.header', 'Drag'),
+					p('Drag over container element to see coordinates'),
+					dom,
+				])
+			)
 
 	return {
 		DOM: vdom$,

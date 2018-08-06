@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode, nav, button, ul, li, DOMSource } from '@cycle/dom'
+import { div, VNode, nav, button, ul, li, DOMSource, h2 } from '@cycle/dom'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -70,32 +70,35 @@ function Carousel(sources: Sources): Sinks {
 		slideIndex$
 			.map(slideIndex =>
 				div('.carousel', [
-					...slidesData
-						.map((slide, index) =>
-							index !== slideIndex ? undefined :
-								div(`.slide .slide-${index}`, {
-									style: {
-										// basic formatting
-										backgroundColor: 'grey',
-										display: 'flex',
-										alignItems: 'center',
-										justifyContent: 'center',
-										position: 'absolute',
-										width: '100%',
-										height: '200px',
-										// required animation stuff starts from here
-										transition: 'opacity 500ms',
-										opacity: 0.01,
-										delayed: {
-											opacity: 1,
-										},
-										remove: {
-											opacity: 0,
+					h2('.header', 'Carousel'),
+					div('.slides', [
+						...slidesData
+							.map((slide, index) =>
+								index !== slideIndex ? undefined :
+									div(`.slide .slide-${index}`, {
+										style: {
+											// basic formatting
+											backgroundColor: 'grey',
+											display: 'flex',
+											alignItems: 'center',
+											justifyContent: 'center',
+											position: 'absolute',
+											width: '100%',
+											height: '200px',
+											// required animation stuff starts from here
+											transition: 'opacity 500ms',
+											opacity: 0.01,
+											delayed: {
+												opacity: 1,
+											},
+											remove: {
+												opacity: 0,
+											}
+											// end animation
 										}
-										// end animation
-									}
-								}, slide)
-						),
+									}, slide)
+							),
+					]),
 					nav([
 						button('.prev', 'Prev'),
 						ul(

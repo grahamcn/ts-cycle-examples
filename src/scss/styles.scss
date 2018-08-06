@@ -77,8 +77,9 @@ button {
 }
 
 .carousel {
-	position: relative;
-	display: flex;
+	.slides {
+		position: relative;
+	}
 
 	nav, nav ul {
 		display: flex;

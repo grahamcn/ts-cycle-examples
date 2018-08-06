@@ -75,7 +75,7 @@ function List(sources: Sources): Sinks {
 			listSinksDOM$,
 		).map(([stateDom, listSinksDOM]) =>
 				div([
-					h2('.header', 'State'),
+					h2('.header', 'List'),
 					stateDom,
 					ul('.list', listSinksDOM)
 				])

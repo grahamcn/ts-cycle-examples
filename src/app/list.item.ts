@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { button, li, p, DOMSource, VNode, h4 } from '@cycle/dom'
+import { button, li, p, DOMSource, VNode, h3 } from '@cycle/dom'
 import { StateSource, Reducer } from 'cycle-onionify'
 import { ListItem } from './list'
 
@@ -43,7 +43,7 @@ function ListItem(sources: Sources): Sinks {
 	const vdom$: Stream<VNode> =
 		state$.map(state =>
 			li([
-				h4('List Item'),
+				h3('List Item'),
 				p('.code', JSON.stringify(state)),
 				button('.increment', {
 					attrs: {

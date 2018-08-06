@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode,  } from '@cycle/dom'
+import { div, VNode, h2,  } from '@cycle/dom'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -19,7 +19,11 @@ function Merge(sources: Sources): Sinks {
 			vdom1$,
 			vdom2$,
 			vdom3$,
-		)
+		).map(dom =>
+		div([
+			h2('.header', 'Merge'),
+			dom,
+		]))
 
 	return {
 		DOM: vdom$,
