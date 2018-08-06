@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode, DOMSource, map, h2,  } from '@cycle/dom'
+import { div, VNode, DOMSource, h2 } from '@cycle/dom'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -11,13 +11,15 @@ interface Sources {
 }
 
 function ChangeUrl(sources: Sources): Sinks {
-	const wait = 5
+	const wait = 3
 	const timer$: Stream<number> =
-		xs.periodic(1000).startWith(-1)
+		xs.periodic(1000)
+			.map(i => i + 1)
+			.startWith(0)
 
 	const url$: Stream<string> =
 		timer$
-			.filter(i => i + 1 === wait)
+			.filter(i => i === wait)
 			.mapTo('/')
 
 	const vdom$: Stream<VNode> =
@@ -25,7 +27,7 @@ function ChangeUrl(sources: Sources): Sinks {
 			.map(i =>
 				div([
 					h2('.header', 'Change Url'),
-					div(`Redirecting in... ${wait - (i + 1) }`)
+					div(`Redirecting in... ${wait - i }`)
 				])
 			)
 
