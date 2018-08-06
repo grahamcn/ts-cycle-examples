@@ -20,6 +20,8 @@ const slidesData = [
 // this could be a good example to refactor to MVI
 
 function Carousel(sources: Sources): Sinks {
+
+	// map a click on goToSlide button to it's slide offset from current.
 	const directOffset$: Stream<number> =
 		sources.DOM
 			.select('.goToslide')
@@ -29,9 +31,20 @@ function Carousel(sources: Sources): Sinks {
 				return parseInt(target['dataset'].dataSlideOffset)
 			})
 
+	// map click on next to +1, previosu to -1
 	const nextOffset$: Stream<number> = sources.DOM.select('.next').events('click').mapTo(1)
-	const mouseOverOffset$: Stream<number> = sources.DOM.select('.slides').events('mouseover').mapTo(1)
 	const prevOffset$: Stream<number> = sources.DOM.select('.prev').events('click').mapTo(-1)
+
+	// going to use this constant definition
+	const mouseOverSlides$ = sources.DOM.select('.slides').events('mouseover')
+
+	// first mouseover, map to +1
+	const mouseOverOffset$: Stream<number> = mouseOverSlides$.take(1).mapTo(1)
+	// subsequent mouseovers, map to +1
+	const mouseOverAfterOutOffset$: Stream<number> =
+		sources.DOM.select('.slides').events('mouseout')
+			.map(() => mouseOverSlides$.take(1).mapTo(1))
+			.flatten()
 
 	// any click on those will reset the timer, so let's create that stream of clicks.
 	const domInitiatedOffset$: Stream<any> =
@@ -40,8 +53,11 @@ function Carousel(sources: Sources): Sinks {
 			prevOffset$,
 			nextOffset$,
 			mouseOverOffset$,
+			mouseOverAfterOutOffset$,
 		)
 
+	// every 3 seconds, emit +1, restart the timer whenever the domInitiatedOffset stream emits
+	// ie cancel when some user interation occurs.
 	const timerOffset$: Stream<number> =
 		domInitiatedOffset$
 			.startWith(0)
@@ -49,6 +65,7 @@ function Carousel(sources: Sources): Sinks {
 			.flatten() // switch latest, in terms of flattening strategies
 			.mapTo(1)
 
+	// apply those +/-s to current, starting with an index of 0
 	const slideIndex$: Stream<number> =
 		xs.merge(
 			timerOffset$,
