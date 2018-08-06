@@ -30,18 +30,20 @@ function Carousel(sources: Sources): Sinks {
 			})
 
 	const nextOffset$: Stream<number> = sources.DOM.select('.next').events('click').mapTo(1)
+	const mouseOverOffset$: Stream<number> = sources.DOM.select('.slides').events('mouseover').mapTo(1)
 	const prevOffset$: Stream<number> = sources.DOM.select('.prev').events('click').mapTo(-1)
 
 	// any click on those will reset the timer, so let's create that stream of clicks.
-	const carouselControlClick$: Stream<any> =
+	const domInitiatedOffset$: Stream<any> =
 		xs.merge(
 			directOffset$,
 			prevOffset$,
 			nextOffset$,
+			mouseOverOffset$,
 		)
 
 	const timerOffset$: Stream<number> =
-		carouselControlClick$
+		domInitiatedOffset$
 			.startWith(0)
 			.map(() => xs.periodic(3000))
 			.flatten() // switch latest, in terms of flattening strategies
@@ -50,9 +52,7 @@ function Carousel(sources: Sources): Sinks {
 	const slideIndex$: Stream<number> =
 		xs.merge(
 			timerOffset$,
-			directOffset$,
-			nextOffset$,
-			prevOffset$,
+			domInitiatedOffset$,
 		).fold((acc, offset) => {
 			const requestedSlide = acc + offset
 			// fix and return any boundry breaches
