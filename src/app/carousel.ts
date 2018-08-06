@@ -121,10 +121,10 @@ function Carousel(sources: Sources): Sinks {
 						ul(
 							slidesData.map((slide, index) =>
 								li(
-									// I've had to change the class too as the dataset change does not
-									// get picked up / cause a re-render. that's quite interesting, and
-									// potentially useful to know
-									button(`.goToslide offset-${slideIndex - index}`, {
+									button(`.goToslide`, {
+										attrs: {
+											disabled: slideIndex === index,
+										},
 										style: {
 											backgroundColor: slideIndex === index ? '#b2f7bb' : 'initial'
 										},
