@@ -4,6 +4,9 @@ const menuItems = [{
 	title: 'default',
 	url: '/',
 }, {
+	title: 'change url',
+	url: '/changeUrl',
+}, {
 	title: 'state',
 	url: '/state',
 }, {

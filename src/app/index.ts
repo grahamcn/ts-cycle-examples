@@ -1,11 +1,12 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode, ul, li, a, DOMSource, map, } from '@cycle/dom'
+import { div, VNode, DOMSource } from '@cycle/dom'
 import isolate from '@cycle/isolate'
 import { Location } from 'history'
 import { Reducer, StateSource } from 'cycle-onionify'
 
 import { renderMenu } from './menu'
 import StateComponent from './state'
+import ChangeUrlComponent from './changeUrl'
 import ListComponent from './list'
 import DefaultComponent from './default'
 import DragComponent from './drag'
@@ -13,12 +14,13 @@ import DragComponent from './drag'
 import '../scss/styles.scss'
 import Logger from './logger'
 import { buffer}  from './xstream.extra'
-import Carousel from './carousel';
+import Carousel from './carousel'
 
 interface Component extends Object {
 	onion?: Stream<Reducer<State>>
 	DOM?: Stream<VNode>
 	Log?: Stream<string>
+	History?: Stream<string>
 }
 
 interface State { }
@@ -45,7 +47,7 @@ function App(sources: Sources): Sinks {
 	const menuVDom = renderMenu()
 	const menuDom$ = xs.of(menuVDom)
 
-	const history$ =
+	const menuHistory$: Stream<string> =
 		sources.DOM
 			.select('.link')
 			.events('click')
@@ -58,6 +60,8 @@ function App(sources: Sources): Sinks {
 	const componentSinks$: Stream<Component> =
 		path$.map(path => {
 			switch (path) {
+				case '/changeUrl':
+					return ChangeUrlComponent(sources)
 				case '/state':
 					return isolate(StateComponent)(sources)
 				case '/list':
@@ -84,6 +88,10 @@ function App(sources: Sources): Sinks {
 		componentSinks$.map(componentSinks => componentSinks.Log || xs.empty())
 			.flatten()
 
+	const componentHistory$: Stream<string> =
+		componentSinks$.map(componentSinks => componentSinks.History || xs.empty())
+			.flatten()
+
 	// logging... AOP for anything none isolated (not super useful perhaps)
 	const loggerLog$ = Logger(sources).Log
 
@@ -93,6 +101,13 @@ function App(sources: Sources): Sinks {
 			loggerLog$,
 			componentLog$,
 		)
+
+	// merge history
+		const appHistory$ =
+			xs.merge(
+				menuHistory$,
+				componentHistory$,
+			)
 
 	// buffer the log$ for 5 seconds.
 	// this could equally be tied into request animation frame, say, or while page data is loading is triggered.
@@ -121,7 +136,7 @@ function App(sources: Sources): Sinks {
 	return {
 		DOM: vdom$,
 		onion: componentOnion$,
-		History: history$,
+		History: appHistory$,
 		Log: explodedBuffered$,
 	}
 }
