@@ -10,7 +10,9 @@ interface Sources {
 	DOM: DOMSource
 }
 
-function ChangeUrl(sources: Sources): Sinks {
+// this could be used by any component if adapted, to redirect, with
+// duration and message, say, url, as it's sources / state
+function Redirect(sources: Sources): Sinks {
 	const wait = 3
 	const timer$: Stream<number> =
 		xs.periodic(1000)
@@ -24,10 +26,11 @@ function ChangeUrl(sources: Sources): Sinks {
 
 	const vdom$: Stream<VNode> =
 		timer$
-			.map(i =>
+			.map(i => wait - i)
+			.map(remainingTime =>
 				div([
-					h2('.header', 'Change Url'),
-					div(`Redirecting in... ${wait - i }`)
+					h2('.header', 'Redirecting'),
+					div(`Redirecting in... ${remainingTime}`)
 				])
 			)
 
@@ -38,4 +41,4 @@ function ChangeUrl(sources: Sources): Sinks {
 	}
 }
 
-export default ChangeUrl
+export default Redirect

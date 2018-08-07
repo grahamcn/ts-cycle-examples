@@ -19,7 +19,7 @@ function Combine(sources: Sources): Sinks {
 
 	// this is commonly addressed like so (whether here or in the parent listening to our vdom stream):
 	// const vdom2$ =
-	// 	xs.periodic(5000)
+	// 	xs.periodic(3000)
 	// 		.mapTo(div('Div 2'))
 	// 		.startWith(undefined)
 

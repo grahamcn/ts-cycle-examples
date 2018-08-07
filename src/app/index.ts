@@ -6,7 +6,7 @@ import { Reducer, StateSource } from 'cycle-onionify'
 
 import { renderMenu } from './menu'
 import StateComponent from './state'
-import ChangeUrlComponent from './changeUrl'
+import RedirectComponent from './redirect'
 import CombineComponent from './combine'
 import MergeComponent from './merge'
 import ListComponent from './list'
@@ -66,8 +66,8 @@ function App(sources: Sources): Sinks {
 					return CombineComponent(sources)
 				case '/merge':
 					return MergeComponent(sources)
-				case '/changeUrl':
-					return ChangeUrlComponent(sources)
+				case '/redirect':
+					return RedirectComponent(sources)
 				case '/state':
 					return isolate(StateComponent)(sources)
 				case '/list':

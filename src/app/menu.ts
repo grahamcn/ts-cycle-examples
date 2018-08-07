@@ -10,8 +10,8 @@ const menuItems = [{
 	title: 'merge',
 	url: '/merge',
 }, {
-	title: 'change url',
-	url: '/changeUrl',
+	title: 'redirect',
+	url: '/redirect',
 }, {
 	title: 'state',
 	url: '/state',
