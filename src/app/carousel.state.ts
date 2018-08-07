@@ -1,12 +1,19 @@
 import xs, { Stream } from 'xstream'
 import { div, VNode, nav, button, ul, li, DOMSource, h2 } from '@cycle/dom'
+import { StateSource, Reducer } from 'cycle-onionify'
+
+interface State {
+	slideIndex: number
+}
 
 interface Sinks {
 	DOM: Stream<VNode>,
+	onion: Stream<Reducer<State>>
 }
 
 interface Sources {
 	DOM: DOMSource
+	onion: StateSource<State>
 }
 
 const slidesData = [
@@ -17,75 +24,92 @@ const slidesData = [
 	'marzipan',
 ]
 
-// convert to use state, where each stream maps to reducers that act on state of selectionIndex.
-
-function Carousel(sources: Sources): Sinks {
+function CarouselState(sources: Sources): Sinks {
+	const state$ = sources.onion.state$
 
 	// map a click on goToSlide button to it's slide offset from current.
-	const directOffset$: Stream<number> =
+	const goToSlideClick$: Stream<number> =
 		sources.DOM
 			.select('.goToslide')
 			.events('click')
 			.map(event => {
 				const target: EventTarget = event.target
-				return parseInt(target['dataset'].dataSlideOffset)
+				return parseInt(target['dataset'].dataSlideIndex)
 			})
 
 	// map click on next to +1, previosu to -1
-	const nextOffset$: Stream<number> = sources.DOM.select('.next').events('click').mapTo(1)
-	const prevOffset$: Stream<number> = sources.DOM.select('.prev').events('click').mapTo(-1)
-
-	// going to use this constant definition
-	const mouseOverSlides$ = sources.DOM.select('.slides').events('mouseover')
-
-	// first mouseover, map to +1
-	const mouseOverOffset$: Stream<number> = mouseOverSlides$.take(1).mapTo(1)
-	// subsequent mouseovers, map to +1
-	const mouseOverAfterOutOffset$: Stream<number> =
-		sources.DOM.select('.slides').events('mouseout')
-			.map(() => mouseOverSlides$.take(1).mapTo(1))
-			.flatten()
+	const nextClick$: Stream<MouseEvent> = sources.DOM.select('.next').events('click')
+	const prevClick$: Stream<MouseEvent> = sources.DOM.select('.prev').events('click')
 
 	// any click on those will reset the timer, so let's create that stream of clicks.
-	const domInitiatedOffset$: Stream<any> =
+	const userInteraction$: Stream<any> =
 		xs.merge(
-			directOffset$,
-			prevOffset$,
-			nextOffset$,
-			mouseOverOffset$,
-			mouseOverAfterOutOffset$,
+			goToSlideClick$,
+			nextClick$,
+			prevClick$,
 		)
 
 	// every 3 seconds, emit +1, restart the timer whenever the domInitiatedOffset stream emits
 	// ie cancel when some user interation occurs.
-	const timerOffset$: Stream<number> =
-		domInitiatedOffset$
+	const timeInitiatedMove$: Stream<number> =
+		userInteraction$
 			.startWith(0)
 			.map(() => xs.periodic(3000))
 			.flatten() // switch latest, in terms of flattening strategies
-			.mapTo(1)
 
-	// apply those +/-s to current, starting with an index of 0
-	const slideIndex$: Stream<number> =
-		xs.merge(
-			timerOffset$,
-			domInitiatedOffset$,
-		).fold((acc, offset) => {
-			const requestedSlide = acc + offset
-			// fix and return any boundry breaches
-			if (requestedSlide < 0) {
-				return slidesData.length - 1
-			} else if (requestedSlide > slidesData.length - 1) {
-				return 0
+	// default reducer - set state to 0
+	const defaultReducer$: Stream<Reducer<State>> =
+		xs.of(function defaultReducer() {
+			return {
+				slideIndex: 0
 			}
+		})
 
-			return requestedSlide
-		}, 0) // start with index 0
+	// add one reducer
+	const addOneReducer$: Stream<Reducer<State>> =
+		xs.merge(
+			nextClick$,
+			timeInitiatedMove$,
+		).map(() => function addOneReducer(prev) {
+			return {
+				slideIndex: prev.slideIndex + 1 === slidesData.length ?
+					0 : prev.slideIndex + 1
+			}
+		})
+
+	// subtract one reducer
+	const subtractOneReducer$: Stream<Reducer<State>> =
+		xs.merge(
+			prevClick$,
+		).map(() => function subtractOneReducer(prev) {
+			return {
+				slideIndex: prev.slideIndex - 1 < 0 ?
+					slidesData.length - 1  : prev.slideIndex - 1
+			}
+		})
+
+	// goto slide reducer
+	const goToSlideReducer$: Stream<Reducer<State>> =
+		xs.merge(
+			goToSlideClick$,
+		).map(slideIndex => function goToSlideReducer() {
+			return {
+				slideIndex,
+			}
+		})
+
+	const carouselReducer$ =
+		xs.merge(
+			defaultReducer$,
+			addOneReducer$,
+			subtractOneReducer$,
+			goToSlideReducer$,
+		)
 
 	// the animations work on entry & exit - one slide div is displayed at a given time
 	const vdom$: Stream<VNode> =
-		slideIndex$
-			.map(slideIndex =>
+		state$
+			.map(({slideIndex}) =>
 				div('.carousel', [
 					h2('.header', 'Carousel'),
 					div('.slides', [
@@ -129,7 +153,7 @@ function Carousel(sources: Sources): Sinks {
 											backgroundColor: slideIndex === index ? '#b2f7bb' : 'initial'
 										},
 										dataset: {
-											dataSlideOffset: (slideIndex - index) * -1
+											dataSlideIndex: index.toString()
 										}
 									}, index + 1)
 								)
@@ -142,7 +166,8 @@ function Carousel(sources: Sources): Sinks {
 
 	return {
 		DOM: vdom$,
+		onion: carouselReducer$,
 	}
 }
 
-export default Carousel
+export default CarouselState

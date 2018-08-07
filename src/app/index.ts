@@ -12,11 +12,13 @@ import MergeComponent from './merge'
 import ListComponent from './list'
 import DefaultComponent from './default'
 import DragComponent from './drag'
+import CarouselComponent from './carousel'
+import CarouselStateComponent from './carousel.state'
+
 
 import '../scss/styles.scss'
 import Logger from './logger'
 import { buffer}  from './xstream.extra'
-import Carousel from './carousel'
 
 interface Component extends Object {
 	onion?: Stream<Reducer<State>>
@@ -75,7 +77,9 @@ function App(sources: Sources): Sinks {
 				case '/drag':
 					return DragComponent(sources)
 				case '/carousel':
-					return Carousel(sources)
+					return CarouselComponent(sources)
+				case '/carousel-state':
+					return isolate(CarouselStateComponent)(sources)
 				default:
 					return DefaultComponent(sources)
 			}

@@ -24,6 +24,9 @@ const menuItems = [{
 }, {
 	title: 'carousel',
 	url: '/carousel',
+}, {
+	title: 'carousel - state',
+	url: '/carousel-state',
 }]
 
 function renderMenuItem(menuItem) {

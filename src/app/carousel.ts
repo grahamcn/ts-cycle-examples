@@ -35,25 +35,12 @@ function Carousel(sources: Sources): Sinks {
 	const nextOffset$: Stream<number> = sources.DOM.select('.next').events('click').mapTo(1)
 	const prevOffset$: Stream<number> = sources.DOM.select('.prev').events('click').mapTo(-1)
 
-	// going to use this constant definition
-	const mouseOverSlides$ = sources.DOM.select('.slides').events('mouseover')
-
-	// first mouseover, map to +1
-	const mouseOverOffset$: Stream<number> = mouseOverSlides$.take(1).mapTo(1)
-	// subsequent mouseovers, map to +1
-	const mouseOverAfterOutOffset$: Stream<number> =
-		sources.DOM.select('.slides').events('mouseout')
-			.map(() => mouseOverSlides$.take(1).mapTo(1))
-			.flatten()
-
 	// any click on those will reset the timer, so let's create that stream of clicks.
 	const domInitiatedOffset$: Stream<any> =
 		xs.merge(
 			directOffset$,
 			prevOffset$,
 			nextOffset$,
-			mouseOverOffset$,
-			mouseOverAfterOutOffset$,
 		)
 
 	// every 3 seconds, emit +1, restart the timer whenever the domInitiatedOffset stream emits
