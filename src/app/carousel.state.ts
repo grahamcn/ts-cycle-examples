@@ -17,11 +17,11 @@ interface Sources {
 }
 
 const slidesData = [
-	'cats',
-	'elephants',
-	'geese',
-	'gnu',
-	'marzipan',
+	'1',
+	'2',
+	'3',
+	'4',
+	'5',
 ]
 
 function CarouselState(sources: Sources): Sinks {
@@ -38,24 +38,34 @@ function CarouselState(sources: Sources): Sinks {
 			})
 
 	// map click on next to +1, previosu to -1
-	const nextClick$: Stream<MouseEvent> = sources.DOM.select('.next').events('click')
-	const prevClick$: Stream<MouseEvent> = sources.DOM.select('.prev').events('click')
+  const nextClick$: Stream<MouseEvent> = sources.DOM.select('.next').events('click')
+  const slidesClick$: Stream<MouseEvent> = sources.DOM.select('.slides').events('click')
+  const prevClick$: Stream<MouseEvent> = sources.DOM.select('.prev').events('click')
+  const mouseLeave$ = sources.DOM.select('.slide').events('mouseleave')
 
 	// any click on those will reset the timer, so let's create that stream of clicks.
 	const userInteraction$: Stream<any> =
 		xs.merge(
 			goToSlideClick$,
 			nextClick$,
-			prevClick$,
+      prevClick$,
+      slidesClick$,
+      mouseLeave$,
 		)
 
 	// every 3 seconds, emit +1, restart the timer whenever the domInitiatedOffset stream emits
-	// ie cancel when some user interation occurs.
+  // ie cancel when some user interation occurs.
 	const timeInitiatedMove$: Stream<number> =
 		userInteraction$
-			.startWith(0)
-			.map(() => xs.periodic(3000))
-			.flatten() // switch latest, in terms of flattening strategies
+      .startWith(0)
+      .map(() =>
+        // each of those events starts the timer.
+        // the timer firsing will increment the slide
+        // the 'increment due to timer' stream is cancelled when the use mouseovers a slide
+        // a mouseout user interaction restarts the timer
+        xs.periodic(1500).endWhen(sources.DOM.select('.slide').events('mouseenter').take(1))
+      )
+      .flatten() // switch latest, in terms of flattening strategies
 
 	// default reducer - set state to 0
 	const defaultReducer$: Stream<Reducer<State>> =
@@ -69,7 +79,8 @@ function CarouselState(sources: Sources): Sinks {
 	const addOneReducer$: Stream<Reducer<State>> =
 		xs.merge(
 			nextClick$,
-			timeInitiatedMove$,
+      timeInitiatedMove$,
+      slidesClick$,
 		).map(() => function addOneReducer(prev) {
 			return {
 				slideIndex: prev.slideIndex + 1 === slidesData.length ?

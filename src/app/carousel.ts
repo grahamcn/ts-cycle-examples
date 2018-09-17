@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode, nav, button, ul, li, DOMSource, h2 } from '@cycle/dom'
+import { div, VNode, nav, button, ul, li, DOMSource, h2, p } from '@cycle/dom'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -74,7 +74,8 @@ function Carousel(sources: Sources): Sinks {
 		slideIndex$
 			.map(slideIndex =>
 				div('.carousel', [
-					h2('.header', 'Carousel'),
+          h2('.header', 'Carousel'),
+          p('Carousel state is a cleaner implementation'),
 					div('.slides', [
 						...slidesData
 							.map((slide, index) =>
