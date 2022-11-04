@@ -14,6 +14,7 @@ interface Sources {
 // duration and message, say, url, as it's sources / state
 function Redirect(sources: Sources): Sinks {
 	const wait = 3
+
 	const timer$: Stream<number> =
 		xs.periodic(1000)
 			.map(i => i + 1)

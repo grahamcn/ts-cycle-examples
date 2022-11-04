@@ -11,17 +11,17 @@ function Combine(sources: Sources): Sinks {
 	// combining two streams of DOMs
 	// all dom streams must emit before the xs.combine will emit
 	const vdom1$ = xs.of(div('Div 1'))
-	const vdom2$ = xs.of(div('Div 2'))
+	// const vdom2$ = xs.of(div('Div 2'))
 
 	// this will cause a 3s delay before render
 	// const vdom2$ =
 	// 	xs.periodic(3000).mapTo(div('Div 2'))
 
 	// this is commonly addressed like so (whether here or in the parent listening to our vdom stream):
-	// const vdom2$ =
-	// 	xs.periodic(3000)
-	// 		.mapTo(div('Div 2'))
-	// 		.startWith(undefined)
+	const vdom2$ =
+		xs.periodic(3000)
+			.mapTo(div('Div 2'))
+			.startWith(undefined)
 
 	const vdom$: Stream<VNode> =
 		xs.combine(

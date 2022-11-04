@@ -12,6 +12,7 @@ import MergeComponent from './merge'
 import ListComponent from './list'
 import DefaultComponent from './default'
 import DragComponent from './drag'
+import HttpComponent from './http'
 import CarouselComponent from './carousel'
 import CarouselStateComponent from './carousel.state'
 
@@ -19,12 +20,14 @@ import CarouselStateComponent from './carousel.state'
 import '../scss/styles.scss'
 import Logger from './logger'
 import { buffer}  from './xstream.extra'
+import { HTTPSource, RequestInput } from '@cycle/http'
 
 interface Component extends Object {
 	onion?: Stream<Reducer<State>>
 	DOM?: Stream<VNode>
 	Log?: Stream<string>
 	History?: Stream<string>
+  HTTP: Stream<RequestInput>
 }
 
 interface State { }
@@ -34,12 +37,14 @@ interface Sinks {
 	onion: Stream<Reducer<State>>
 	History: Stream<string>
 	Log: Stream<string>
+  HTTP: Stream<RequestInput>
 }
 
 interface Sources {
 	DOM: DOMSource
 	History: Stream<Location>
 	onion: StateSource<State>
+  HTTP: HTTPSource,
 }
 
 function App(sources: Sources): Sinks {
@@ -76,6 +81,8 @@ function App(sources: Sources): Sinks {
 					return isolate(ListComponent)(sources)
 				case '/drag':
 					return DragComponent(sources)
+        case '/http':
+          return HttpComponent(sources)
 				case '/carousel':
 					return CarouselComponent(sources)
 				case '/carousel-state':
@@ -102,6 +109,11 @@ function App(sources: Sources): Sinks {
 	const componentHistory$: Stream<string> =
 		componentSinks$.map(componentSinks => componentSinks.History || xs.empty())
 			.flatten()
+
+  const componentHttp$: Stream<RequestInput> =
+    componentSinks$.map(componentSinks => componentSinks.HTTP || xs.empty())
+      .flatten()
+
 
 	// logging... AOP for anything none isolated (not super useful perhaps)
 	const loggerLog$ = Logger(sources).Log
@@ -149,6 +161,7 @@ function App(sources: Sources): Sinks {
 		onion: componentOnion$,
 		History: appHistory$,
 		Log: explodedBuffered$,
+    HTTP: componentHttp$,
 	}
 }
 

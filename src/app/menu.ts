@@ -22,6 +22,9 @@ const menuItems = [{
 	title: 'drag',
 	url: '/drag',
 }, {
+	title: 'http',
+	url: '/http',
+}, {
 	title: 'carousel',
 	url: '/carousel',
 }, {

@@ -21,7 +21,9 @@ function Drag(sources: Sources): Sinks {
 
 	const vdom$: Stream<VNode> =
 		drags$
-			.map((mouseMove: MouseEvent) => div(`{ x: ${mouseMove.x}, y: ${mouseMove.y} }`))
+			.map((mouseMove: MouseEvent) =>
+        div(`{ x: ${mouseMove.x}, y: ${mouseMove.y} }`)
+      )
 			.startWith(undefined)
 			.map(dom =>
 				div([

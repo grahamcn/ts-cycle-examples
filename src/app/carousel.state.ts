@@ -53,15 +53,16 @@ function CarouselState(sources: Sources): Sinks {
 
 	// every 3 seconds, emit +1, restart the timer whenever the domInitiatedOffset stream emits
   // ie cancel when some user interation occurs.
+  // this is a stream of timer iniatiated slide "requests" / "nexts"
 	const timeInitiatedMove$: Stream<number> =
 		userInteraction$
       .startWith(0)
       .map(() =>
         // each of those events starts the timer
-        // the timer firsing will increment the slide
+        // the timer firing will increment the slide
         // the 'increment due to timer' stream is cancelled when the use mouseovers a slide
         // a mouseout user interaction restarts the timer
-        // there is no need to liusten to more than one mouseenter event
+        // (there is no need to listen for more than one mouseenter event)
         xs.periodic(1500).endWhen(sources.DOM.select('.slide').events('mouseenter').take(1))
       )
       .flatten() // switch latest, in terms of flattening strategies
